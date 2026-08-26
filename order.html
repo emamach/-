@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="theme-color"
+    content="#1769aa"
+  >
+
+  <link
+    rel="manifest"
+    href="manifest.json"
+  >
+
+  <link
+    rel="icon"
+    href="assets/icon-192.png"
+  >
+
+  <link
+    rel="stylesheet"
+    href="css/style.css"
+  >
+
+  <title>إتمام الطلب - دجاج اليمامة</title>
+</head>
+
+<body>
+
+  <div class="ticker-wrap">
+    <div class="ticker">
+      🐔 دجاج اليمامة - طلبك يصل إليك طازجاً
+    </div>
+  </div>
+
+
+  <main>
+
+    <div class="order-box">
+
+      <div class="order-title">
+        🛒 إتمام طلبك
+      </div>
+
+
+      <!-- المنتج المختار -->
+
+      <div
+        id="selected-product"
+        class="location-box"
+      >
+        جاري تحميل المنتج...
+      </div>
+
+
+      <!-- نموذج العميل -->
+
+      <form id="order-form">
+
+        <div class="form-group">
+
+          <label for="customer-name">
+            الاسم الكامل
+          </label>
+
+          <input
+            id="customer-name"
+            type="text"
+            placeholder="اكتب اسمك الكامل"
+            required
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="customer-phone">
+            رقم الهاتف
+          </label>
+
+          <input
+            id="customer-phone"
+            type="tel"
+            inputmode="tel"
+            placeholder="اكتب رقم هاتفك"
+            required
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="customer-address">
+            العنوان
+          </label>
+
+          <textarea
+            id="customer-address"
+            placeholder="اكتب عنوان التوصيل بالتفصيل"
+            required
+          ></textarea>
+
+        </div>
+
+
+        <!-- تحديد الموقع -->
+
+        <div class="location-box">
+
+          <strong>
+            📍 موقع التوصيل
+          </strong>
+
+          <p
+            id="location-status"
+            style="margin-top:6px;"
+          >
+            لم يتم تحديد موقعك بعد.
+          </p>
+
+          <button
+            type="button"
+            class="secondary-button"
+            id="location-button"
+          >
+            📍 تحديد موقعي
+          </button>
+
+        </div>
+
+
+        <!-- الكمية -->
+
+        <div class="form-group">
+
+          <label for="quantity">
+            الكمية
+          </label>
+
+          <input
+            id="quantity"
+            type="number"
+            min="1"
+            value="1"
+            required
+          >
+
+        </div>
+
+
+        <!-- الملاحظات -->
+
+        <div class="form-group">
+
+          <label for="order-notes">
+            ملاحظات الطلب
+          </label>
+
+          <textarea
+            id="order-notes"
+            placeholder="أي ملاحظات إضافية..."
+          ></textarea>
+
+        </div>
+
+
+        <!-- الشروط -->
+
+        <div
+          class="location-box"
+          style="font-size:12px;"
+        >
+
+          <label>
+
+            <input
+              type="checkbox"
+              id="order-agreement"
+              required
+            >
+
+            أؤكد أن بيانات الطلب صحيحة، وأتحمل مسؤولية الطلب الذي أؤكده، وسيتم التواصل معي عبر المحادثة أو الهاتف بخصوص الطلب.
+
+          </label>
+
+        </div>
+
+
+        <button
+          type="submit"
+          class="primary-button"
+        >
+          ✅ تأكيد إرسال الطلب
+        </button>
+
+
+        <button
+          type="button"
+          class="secondary-button"
+          onclick="history.back()"
+        >
+          العودة للمتجر
+        </button>
+
+      </form>
+
+    </div>
+
+  </main>
+
+
+  <div
+    class="toast"
+    id="yamama-toast"
+  ></div>
+
+
+<script>
+
+"use strict";
+
+
+/* =========================================
+   المنتج المختار
+   ========================================= */
+
+let selectedProduct = null;
+
+
+/* =========================================
+   الموقع
+   ========================================= */
+
+let customerLocation = {
+
+  latitude: null,
+
+  longitude: null
+
+};
+
+
+/* =========================================
+   تحميل المنتج
+   ========================================= */
+
+function loadSelectedProduct() {
+
+  const saved =
+    localStorage.getItem(
+      "yamama_selected_product"
+    );
+
+
+  const container =
+    document.getElementById(
+      "selected-product"
+    );
+
+
+  if (!saved) {
+
+    container.innerHTML =
+      "لم يتم اختيار منتج.";
+
+    return;
+
+  }
+
+
+  try {
+
+    selectedProduct =
+      JSON.parse(saved);
+
+
+    container.innerHTML = `
+
+      <strong>
+        المنتج:
+      </strong>
+
+      ${escapeHTML(
+        selectedProduct.name
+      )}
+
+      <br>
+
+      <strong>
+        السعر:
+      </strong>
+
+      ${escapeHTML(
+        selectedProduct.price
+      )}
+      ل.س
+
+    `;
+
+  } catch (error) {
+
+    container.innerHTML =
+      "تعذر تحميل المنتج.";
+
+  }
+
+}
+
+
+/* =========================================
+   تحديد الموقع
+   ========================================= */
+
+document
+  .getElementById("location-button")
+  .addEventListener(
+    "click",
+    getCustomerLocation
+  );
+
+
+function getCustomerLocation() {
+
+  const status =
+    document.getElementById(
+      "location-status"
+    );
+
+
+  if (!navigator.geolocation) {
+
+    status.textContent =
+      "المتصفح لا يدعم تحديد الموقع.";
+
+    return;
+
+  }
+
+
+  status.textContent =
+    "جاري تحديد موقعك...";
+
+
+  navigator.geolocation.getCurrentPosition(
+
+    function(position) {
+
+      customerLocation.latitude =
+        position.coords.latitude;
+
+      customerLocation.longitude =
+        position.coords.longitude;
+
+
+      status.innerHTML = `
+
+        <span class="location-success">
+
+          ✓ تم تحديد موقع التوصيل بنجاح
+
+        </span>
+
+      `;
+
+    },
+
+    function(error) {
+
+      status.textContent =
+        "لم يتم السماح بتحديد الموقع. يمكنك كتابة العنوان يدوياً.";
+
+    },
+
+    {
+      enableHighAccuracy: true,
+
+      timeout: 10000,
+
+      maximumAge: 0
+    }
+
+  );
+
+}
+
+
+/* =========================================
+   إرسال الطلب
+   ========================================= */
+
+document
+  .getElementById("order-form")
+  .addEventListener(
+    "submit",
+    submitOrder
+  );
+
+
+function submitOrder(event) {
+
+  event.preventDefault();
+
+
+  if (!selectedProduct) {
+
+    showMessage(
+      "لم يتم اختيار منتج."
+    );
+
+    return;
+
+  }
+
+
+  const name =
+    document
+      .getElementById(
+        "customer-name"
+      )
+      .value
+      .trim();
+
+
+  const phone =
+    document
+      .getElementById(
+        "customer-phone"
+      )
+      .value
+      .trim();
+
+
+  const address =
+    document
+      .getElementById(
+        "customer-address"
+      )
+      .value
+      .trim();
+
+
+  const quantity =
+    Number(
+      document
+        .getElementById(
+          "quantity"
+        )
+        .value
+    );
+
+
+  const notes =
+    document
+      .getElementById(
+        "order-notes"
+      )
+      .value
+      .trim();
+
+
+  if (!name || !phone || !address) {
+
+    showMessage(
+      "يرجى إكمال بياناتك."
+    );
+
+    return;
+
+  }
+
+
+  if (
+    !quantity ||
+    quantity < 1
+  ) {
+
+    showMessage(
+      "يرجى تحديد الكمية."
+    );
+
+    return;
+
+  }
+
+
+  const order = {
+
+    id:
+      "YM-" +
+      Date.now(),
+
+    productId:
+      selectedProduct.id,
+
+    productName:
+      selectedProduct.name,
+
+    price:
+      selectedProduct.price,
+
+    quantity:
+      quantity,
+
+    customerName:
+      name,
+
+    customerPhone:
+      phone,
+
+    customerAddress:
+      address,
+
+    latitude:
+      customerLocation.latitude,
+
+    longitude:
+      customerLocation.longitude,
+
+    notes:
+      notes,
+
+    status:
+      "received",
+
+    createdAt:
+      new Date().toISOString()
+
+  };
+
+
+  /*
+    حفظ مؤقت محلي.
+
+    لاحقاً سنستبدل هذا بـ Firebase
+    حتى يصل الطلب الحقيقي إلى لوحة المدير.
+  */
+
+  localStorage.setItem(
+    "yamama_last_order",
+    JSON.stringify(order)
+  );
+
+
+  showMessage(
+    "✓ تم تجهيز الطلب بنجاح."
+  );
+
+
+  setTimeout(
+    function() {
+
+      window.location.href =
+        "tracking.html";
+
+    },
+    1000
+  );
+
+}
+
+
+/* =========================================
+   حماية النص
+   ========================================= */
+
+function escapeHTML(value) {
+
+  return String(value)
+
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
+
+}
+
+
+/* =========================================
+   رسالة
+   ========================================= */
+
+function showMessage(message) {
+
+  const toast =
+    document.getElementById(
+      "yamama-toast"
+    );
+
+
+  toast.textContent =
+    message;
+
+
+  toast.classList.add(
+    "show"
+  );
+
+
+  setTimeout(
+    function() {
+
+      toast.classList.remove(
+        "show"
+      );
+
+    },
+    2500
+  );
+
+}
+
+
+/* =========================================
+   بدء الصفحة
+   ========================================= */
+
+loadSelectedProduct();
+
+</script>
+
+</body>
+</html>
