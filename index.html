@@ -1,21 +1,197 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <meta name="theme-color" content="#1769aa">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-  <link rel="manifest" href="manifest.json">
+  <meta
+    name="theme-color"
+    content="#1769aa"
+  >
+
+  <meta
+    name="description"
+    content="متجر دجاج اليمامة للدجاج الطازج"
+  >
+
+  <link
+    rel="manifest"
+    href="manifest.json"
+  >
+
+  <link
+    rel="icon"
+    type="image/png"
+    href="assets/icon-192.png"
+  >
+
+  <link
+    rel="apple-touch-icon"
+    href="assets/icon-192.png"
+  >
+
+  <link
+    rel="stylesheet"
+    href="css/style.css"
+  >
 
   <title>دجاج اليمامة</title>
+
 </head>
 
 <body>
 
-  <h1>دجاج اليمامة</h1>
+  <!-- ================================
+       الشريط المتحرك
+       ================================ -->
 
-  <p>متجر الدجاج الطازج</p>
+  <div class="ticker-wrap">
+
+    <div
+      class="ticker"
+      id="ticker-el"
+    >
+      🔥 أهلاً بكم في متجر دجاج اليمامة - دجاج طازج يومياً وتوصيل مباشر 🔥
+    </div>
+
+  </div>
+
+
+  <!-- ================================
+       رأس الصفحة
+       ================================ -->
+
+  <header>
+
+    <button
+      class="chat-top-button"
+      type="button"
+      onclick="openChat()"
+    >
+      💬 تحدث مع المدير
+    </button>
+
+
+    <div class="brand">
+
+      <img
+        class="brand-logo"
+        src="assets/icon-512.png"
+        alt="شعار دجاج اليمامة"
+      >
+
+      <div class="brand-title">
+        دجاج اليمامة
+      </div>
+
+      <div class="brand-subtitle">
+        منتجاتنا
+      </div>
+
+    </div>
+
+  </header>
+
+
+  <!-- ================================
+       المنتجات
+       ================================ -->
+
+  <main>
+
+    <section
+      class="products-grid"
+      id="products-grid"
+      aria-label="منتجات دجاج اليمامة"
+    >
+    </section>
+
+  </main>
+
+
+  <!-- ================================
+       أسفل الصفحة
+       ================================ -->
+
+  <footer class="footer">
+
+    <div class="footer-title">
+      دجاج اليمامة
+    </div>
+
+    <div class="footer-phone">
+      خدمة العملاء
+    </div>
+
+  </footer>
+
+
+  <!-- ================================
+       نافذة المحادثة
+       ================================ -->
+
+  <div
+    class="chat-modal"
+    id="chat-modal"
+  >
+
+    <div class="chat-box">
+
+      <div class="chat-header">
+
+        <span>
+          محادثة إدارة دجاج اليمامة
+        </span>
+
+        <span
+          class="chat-close"
+          onclick="closeChat()"
+          aria-label="إغلاق المحادثة"
+        >
+          ✕
+        </span>
+
+      </div>
+
+
+      <div
+        class="chat-body"
+        id="chat-body"
+      >
+
+        <div class="chat-bubble manager">
+          أهلاً بكم في دجاج اليمامة، كيف يمكننا مساعدتكم؟
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ================================
+       إشعارات
+       ================================ -->
+
+  <div
+    class="toast"
+    id="yamama-toast"
+  ></div>
+
+
+  <!-- ================================
+       JavaScript
+       ================================ -->
+
+  <script src="js/app.js"></script>
 
 </body>
+
 </html>
