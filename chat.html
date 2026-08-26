@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="theme-color"
+    content="#1769aa"
+  >
+
+  <link
+    rel="manifest"
+    href="manifest.json"
+  >
+
+  <link
+    rel="icon"
+    href="assets/icon-192.png"
+  >
+
+  <link
+    rel="stylesheet"
+    href="css/style.css"
+  >
+
+  <title>المحادثة - دجاج اليمامة</title>
+</head>
+
+<body>
+
+  <!-- الشريط العلوي -->
+
+  <div class="ticker-wrap">
+
+    <div class="ticker">
+      🐔 دجاج اليمامة - خدمة العملاء
+    </div>
+
+  </div>
+
+
+  <!-- صفحة المحادثة -->
+
+  <main>
+
+    <div class="chat-page">
+
+      <div class="chat-page-header">
+
+        <div>
+
+          <div class="chat-page-title">
+            💬 إدارة دجاج اليمامة
+          </div>
+
+          <div class="chat-online">
+            ● خدمة العملاء
+          </div>
+
+        </div>
+
+        <button
+          class="chat-back"
+          onclick="window.location.href='index.html'"
+        >
+          رجوع
+        </button>
+
+      </div>
+
+
+      <!-- معلومات الطلب -->
+
+      <div
+        id="order-info"
+        class="chat-order-info"
+      >
+        لا يوجد طلب محدد
+      </div>
+
+
+      <!-- الرسائل -->
+
+      <div
+        id="messages"
+        class="messages"
+      >
+
+        <div class="message manager-message">
+
+          أهلاً وسهلاً بكم في دجاج اليمامة.
+          كيف يمكننا مساعدتكم؟
+
+        </div>
+
+      </div>
+
+
+      <!-- كتابة الرسالة -->
+
+      <form
+        id="message-form"
+        class="message-form"
+      >
+
+        <input
+          id="message-input"
+          type="text"
+          placeholder="اكتب رسالتك هنا..."
+          autocomplete="off"
+          required
+        >
+
+        <button
+          type="submit"
+        >
+          إرسال
+        </button>
+
+      </form>
+
+    </div>
+
+  </main>
+
+
+  <div
+    class="toast"
+    id="yamama-toast"
+  ></div>
+
+
+<script>
+
+"use strict";
+
+
+/* =========================================
+   عناصر الصفحة
+   ========================================= */
+
+const messages =
+  document.getElementById(
+    "messages"
+  );
+
+
+const messageForm =
+  document.getElementById(
+    "message-form"
+  );
+
+
+const messageInput =
+  document.getElementById(
+    "message-input"
+  );
+
+
+/* =========================================
+   تحميل الطلب
+   ========================================= */
+
+function getOrder() {
+
+  const saved =
+    localStorage.getItem(
+      "yamama_last_order"
+    );
+
+
+  if (!saved) {
+    return null;
+  }
+
+
+  try {
+
+    return JSON.parse(saved);
+
+  } catch {
+
+    return null;
+
+  }
+
+}
+
+
+/* =========================================
+   عرض معلومات الطلب
+   ========================================= */
+
+function loadOrderInfo() {
+
+  const order =
+    getOrder();
+
+
+  const box =
+    document.getElementById(
+      "order-info"
+    );
+
+
+  if (!order) {
+
+    box.textContent =
+      "لا يوجد طلب محدد حالياً.";
+
+    return;
+
+  }
+
+
+  box.innerHTML = `
+
+    <strong>
+      رقم الطلب:
+    </strong>
+
+    ${escapeHTML(order.id)}
+
+    <br>
+
+    <strong>
+      المنتج:
+    </strong>
+
+    ${escapeHTML(order.productName)}
+
+    <br>
+
+    <strong>
+      الكمية:
+    </strong>
+
+    ${escapeHTML(order.quantity)}
+
+  `;
+
+}
+
+
+/* =========================================
+   تخزين الرسائل
+   ========================================= */
+
+function getMessages() {
+
+  const saved =
+    localStorage.getItem(
+      "yamama_chat_messages"
+    );
+
+
+  if (!saved) {
+    return [];
+  }
+
+
+  try {
+
+    return JSON.parse(saved);
+
+  } catch {
+
+    return [];
+
+  }
+
+}
+
+
+function saveMessages(list) {
+
+  localStorage.setItem(
+    "yamama_chat_messages",
+    JSON.stringify(list)
+  );
+
+}
+
+
+/* =========================================
+   عرض الرسائل
+   ========================================= */
+
+function renderMessages() {
+
+  const list =
+    getMessages();
+
+
+  /*
+    نترك رسالة الترحيب
+    إذا لم توجد رسائل.
+  */
+
+  if (list.length === 0) {
+    return;
+  }
+
+
+  messages.innerHTML = "";
+
+
+  list.forEach(
+    message => {
+
+      const bubble =
+        document.createElement(
+          "div"
+        );
+
+
+      bubble.className =
+        "message " +
+        (
+          message.sender === "manager"
+            ? "manager-message"
+            : "customer-message"
+        );
+
+
+      bubble.textContent =
+        message.text;
+
+
+      messages.appendChild(
+        bubble
+      );
+
+    }
+  );
+
+
+  messages.scrollTop =
+    messages.scrollHeight;
+
+}
+
+
+/* =========================================
+   إرسال رسالة
+   ========================================= */
+
+messageForm.addEventListener(
+  "submit",
+  function(event) {
+
+    event.preventDefault();
+
+
+    const text =
+      messageInput.value.trim();
+
+
+    if (!text) {
+      return;
+    }
+
+
+    const list =
+      getMessages();
+
+
+    list.push({
+
+      sender:
+        "customer",
+
+      text:
+        text,
+
+      time:
+        new Date().toISOString()
+
+    });
+
+
+    saveMessages(list);
+
+
+    messageInput.value =
+      "";
+
+
+    renderMessages();
+
+
+    /*
+      الرد التجريبي.
+
+      لاحقاً سيتم استبداله
+      برسالة حقيقية من المدير
+      عبر Firebase.
+    */
+
+    setTimeout(
+      function() {
+
+        const current =
+          getMessages();
+
+
+        current.push({
+
+          sender:
+            "manager",
+
+          text:
+            "تم استلام رسالتكم، وسيتم الرد عليكم من الإدارة.",
+
+          time:
+            new Date().toISOString()
+
+        });
+
+
+        saveMessages(current);
+
+        renderMessages();
+
+      },
+      1000
+    );
+
+  }
+);
+
+
+/* =========================================
+   حماية النص
+   ========================================= */
+
+function escapeHTML(value) {
+
+  return String(value)
+
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
+
+}
+
+
+/* =========================================
+   التشغيل
+   ========================================= */
+
+loadOrderInfo();
+
+renderMessages();
+
+</script>
+
+</body>
+
+</html>
