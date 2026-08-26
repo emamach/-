@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="theme-color"
+    content="#1769aa"
+  >
+
+  <link
+    rel="manifest"
+    href="manifest.json"
+  >
+
+  <link
+    rel="icon"
+    href="assets/icon-192.png"
+  >
+
+  <link
+    rel="stylesheet"
+    href="css/style.css"
+  >
+
+  <title>تتبع الطلب - دجاج اليمامة</title>
+
+</head>
+
+<body>
+
+  <div class="ticker-wrap">
+
+    <div class="ticker">
+      🐔 دجاج اليمامة - متابعة طلبك
+    </div>
+
+  </div>
+
+
+  <main>
+
+    <div class="tracking-box">
+
+      <div class="tracking-title">
+        📦 تتبع طلبك
+      </div>
+
+
+      <div
+        id="order-number"
+        style="
+          margin-bottom:18px;
+          color:#607d94;
+          font-size:14px;
+        "
+      >
+        رقم الطلب: جاري التحميل...
+      </div>
+
+
+      <!-- ==========================
+           مراحل الطلب
+           ========================== -->
+
+      <div
+        id="tracking-steps"
+      >
+
+        <div
+          class="tracking-step"
+          data-status="received"
+        >
+
+          <div class="tracking-icon">
+            ✓
+          </div>
+
+          <div>
+            تم الاستلام
+          </div>
+
+        </div>
+
+
+        <div
+          class="tracking-step"
+          data-status="preparing"
+        >
+
+          <div class="tracking-icon">
+            2
+          </div>
+
+          <div>
+            جاري التحضير
+          </div>
+
+        </div>
+
+
+        <div
+          class="tracking-step"
+          data-status="on_the_way"
+        >
+
+          <div class="tracking-icon">
+            3
+          </div>
+
+          <div>
+            في الطريق
+          </div>
+
+        </div>
+
+
+        <div
+          class="tracking-step"
+          data-status="delivered"
+        >
+
+          <div class="tracking-icon">
+            ✓
+          </div>
+
+          <div>
+            تم التسليم
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- ==========================
+           تفاصيل الطلب
+           ========================== -->
+
+      <div
+        id="order-details"
+        class="driver-card"
+      >
+        جاري تحميل تفاصيل الطلب...
+      </div>
+
+
+      <!-- ==========================
+           عامل التوصيل
+           ========================== -->
+
+      <div
+        id="driver-card"
+        class="driver-card"
+        style="display:none;"
+      >
+
+        <div class="driver-name">
+          🛵 عامل التوصيل
+        </div>
+
+        <div id="driver-name">
+        </div>
+
+        <a
+          id="driver-phone"
+          class="call-driver"
+          href="#"
+        >
+          📞 الاتصال بعامل التوصيل
+        </a>
+
+      </div>
+
+
+      <!-- ==========================
+           الأزرار
+           ========================== -->
+
+      <button
+        class="primary-button"
+        type="button"
+        onclick="openCustomerChat()"
+        style="margin-top:15px;"
+      >
+        💬 تحدث مع الإدارة
+      </button>
+
+
+      <button
+        class="secondary-button"
+        type="button"
+        onclick="window.location.href='index.html'"
+      >
+        العودة إلى المتجر
+      </button>
+
+    </div>
+
+  </main>
+
+
+  <div
+    class="toast"
+    id="yamama-toast"
+  ></div>
+
+
+<script>
+
+"use strict";
+
+
+/* =========================================
+   الحالات
+   ========================================= */
+
+const statusOrder = [
+
+  "received",
+
+  "preparing",
+
+  "on_the_way",
+
+  "delivered"
+
+];
+
+
+const statusNames = {
+
+  received:
+    "تم الاستلام",
+
+  preparing:
+    "جاري التحضير",
+
+  on_the_way:
+    "في الطريق",
+
+  delivered:
+    "تم التسليم"
+
+};
+
+
+/* =========================================
+   تحميل آخر طلب
+   ========================================= */
+
+function getLastOrder() {
+
+  const saved =
+    localStorage.getItem(
+      "yamama_last_order"
+    );
+
+
+  if (!saved) {
+    return null;
+  }
+
+
+  try {
+
+    return JSON.parse(saved);
+
+  } catch (error) {
+
+    return null;
+
+  }
+
+}
+
+
+/* =========================================
+   عرض مراحل الطلب
+   ========================================= */
+
+function renderTracking(order) {
+
+  const currentStatus =
+    order.status || "received";
+
+
+  const currentIndex =
+    statusOrder.indexOf(
+      currentStatus
+    );
+
+
+  const steps =
+    document.querySelectorAll(
+      ".tracking-step"
+    );
+
+
+  steps.forEach(
+    (step, index) => {
+
+      step.classList.remove(
+        "active",
+        "done"
+      );
+
+
+      if (
+        index <
+        currentIndex
+      ) {
+
+        step.classList.add(
+          "done"
+        );
+
+      }
+
+
+      if (
+        index ===
+        currentIndex
+      ) {
+
+        step.classList.add(
+          "active"
+        );
+
+      }
+
+    }
+  );
+
+}
+
+
+/* =========================================
+   تفاصيل الطلب
+   ========================================= */
+
+function renderOrderDetails(order) {
+
+  const box =
+    document.getElementById(
+      "order-details"
+    );
+
+
+  box.innerHTML = `
+
+    <strong>
+      ${escapeHTML(order.productName)}
+    </strong>
+
+    <br>
+
+    الكمية:
+    ${escapeHTML(order.quantity)}
+
+    <br>
+
+    الحالة:
+    ${statusNames[order.status] || "تم الاستلام"}
+
+  `;
+
+
+  document.getElementById(
+    "order-number"
+  ).textContent =
+    "رقم الطلب: " +
+    order.id;
+
+}
+
+
+/* =========================================
+   بيانات عامل التوصيل
+   ========================================= */
+
+function loadDriver() {
+
+  const settings =
+    JSON.parse(
+      localStorage.getItem(
+        "yamama_settings"
+      ) || "{}"
+    );
+
+
+  if (
+    !settings.driverName &&
+    !settings.driverPhone
+  ) {
+
+    return;
+
+  }
+
+
+  const card =
+    document.getElementById(
+      "driver-card"
+    );
+
+
+  const name =
+    document.getElementById(
+      "driver-name"
+    );
+
+
+  const phone =
+    document.getElementById(
+      "driver-phone"
+    );
+
+
+  card.style.display =
+    "block";
+
+
+  name.textContent =
+    settings.driverName ||
+    "عامل التوصيل";
+
+
+  if (settings.driverPhone) {
+
+    phone.href =
+      "tel:" +
+      settings.driverPhone;
+
+  } else {
+
+    phone.style.display =
+      "none";
+
+  }
+
+}
+
+
+/* =========================================
+   المحادثة
+   ========================================= */
+
+function openCustomerChat() {
+
+  /*
+    في المرحلة القادمة سنربط هذا
+    بنظام المحادثة الحقيقي مع المدير.
+  */
+
+  window.location.href =
+    "chat.html";
+
+}
+
+
+/* =========================================
+   حماية النص
+   ========================================= */
+
+function escapeHTML(value) {
+
+  return String(value)
+
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
+
+}
+
+
+/* =========================================
+   تشغيل الصفحة
+   ========================================= */
+
+function initTracking() {
+
+  const order =
+    getLastOrder();
+
+
+  if (!order) {
+
+    document.getElementById(
+      "order-number"
+    ).textContent =
+      "لا يوجد طلب محفوظ حالياً.";
+
+
+    document.getElementById(
+      "order-details"
+    ).textContent =
+      "لم يتم العثور على طلب.";
+
+
+    return;
+
+  }
+
+
+  renderTracking(order);
+
+  renderOrderDetails(order);
+
+  loadDriver();
+
+}
+
+
+initTracking();
+
+</script>
+
+</body>
+
+</html>
