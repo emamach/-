@@ -2,6 +2,7 @@
 <html lang="ar" dir="rtl">
 
 <head>
+
   <meta charset="UTF-8">
 
   <meta
@@ -15,11 +16,6 @@
   >
 
   <link
-    rel="manifest"
-    href="manifest.json"
-  >
-
-  <link
     rel="icon"
     href="assets/icon-192.png"
   >
@@ -29,199 +25,236 @@
     href="css/style.css"
   >
 
-  <title>إتمام الطلب - دجاج اليمامة</title>
+  <title>تأكيد الطلب - دجاج اليمامة</title>
+
 </head>
+
 
 <body>
 
-  <div class="ticker-wrap">
-    <div class="ticker">
-      🐔 دجاج اليمامة - طلبك يصل إليك طازجاً
+
+<main>
+
+  <div class="order-container">
+
+
+    <!-- رأس الصفحة -->
+
+    <div class="order-header">
+
+      <img
+        src="assets/icon-192.png"
+        alt="دجاج اليمامة"
+        class="order-logo"
+      >
+
+      <h1>
+        تأكيد طلبك
+      </h1>
+
+      <p>
+        يرجى إدخال معلومات التوصيل
+      </p>
+
     </div>
-  </div>
 
 
-  <main>
+    <!-- معلومات المنتج -->
 
-    <div class="order-box">
+    <section class="order-section">
 
-      <div class="order-title">
-        🛒 إتمام طلبك
-      </div>
-
-
-      <!-- المنتج المختار -->
+      <h2>
+        🐔 المنتج
+      </h2>
 
       <div
         id="selected-product"
-        class="location-box"
+        class="selected-product"
       >
         جاري تحميل المنتج...
       </div>
 
-
-      <!-- نموذج العميل -->
-
-      <form id="order-form">
-
-        <div class="form-group">
-
-          <label for="customer-name">
-            الاسم الكامل
-          </label>
-
-          <input
-            id="customer-name"
-            type="text"
-            placeholder="اكتب اسمك الكامل"
-            required
-          >
-
-        </div>
+    </section>
 
 
-        <div class="form-group">
+    <!-- بيانات الزبون -->
 
-          <label for="customer-phone">
-            رقم الهاتف
-          </label>
+    <section class="order-section">
 
-          <input
-            id="customer-phone"
-            type="tel"
-            inputmode="tel"
-            placeholder="اكتب رقم هاتفك"
-            required
-          >
-
-        </div>
+      <h2>
+        👤 معلومات الزبون
+      </h2>
 
 
-        <div class="form-group">
+      <label for="customer-name">
+        الاسم الكامل
+      </label>
 
-          <label for="customer-address">
-            العنوان
-          </label>
-
-          <textarea
-            id="customer-address"
-            placeholder="اكتب عنوان التوصيل بالتفصيل"
-            required
-          ></textarea>
-
-        </div>
+      <input
+        id="customer-name"
+        type="text"
+        placeholder="اكتب اسمك الكامل"
+        autocomplete="name"
+        required
+      >
 
 
-        <!-- تحديد الموقع -->
+      <label for="customer-phone">
+        رقم الهاتف
+      </label>
 
-        <div class="location-box">
-
-          <strong>
-            📍 موقع التوصيل
-          </strong>
-
-          <p
-            id="location-status"
-            style="margin-top:6px;"
-          >
-            لم يتم تحديد موقعك بعد.
-          </p>
-
-          <button
-            type="button"
-            class="secondary-button"
-            id="location-button"
-          >
-            📍 تحديد موقعي
-          </button>
-
-        </div>
+      <input
+        id="customer-phone"
+        type="tel"
+        placeholder="مثال: 09xxxxxxxx"
+        autocomplete="tel"
+        required
+      >
 
 
-        <!-- الكمية -->
+      <label for="customer-address">
+        عنوان التوصيل
+      </label>
 
-        <div class="form-group">
+      <textarea
+        id="customer-address"
+        placeholder="اكتب المحافظة والمدينة والحي والشارع وأي علامة تدل على المكان"
+        rows="4"
+        required
+      ></textarea>
 
-          <label for="quantity">
-            الكمية
-          </label>
-
-          <input
-            id="quantity"
-            type="number"
-            min="1"
-            value="1"
-            required
-          >
-
-        </div>
+    </section>
 
 
-        <!-- الملاحظات -->
+    <!-- الموقع -->
 
-        <div class="form-group">
+    <section class="order-section">
 
-          <label for="order-notes">
-            ملاحظات الطلب
-          </label>
+      <h2>
+        📍 موقع التوصيل
+      </h2>
 
-          <textarea
-            id="order-notes"
-            placeholder="أي ملاحظات إضافية..."
-          ></textarea>
-
-        </div>
+      <p class="location-help">
+        اضغط الزر للسماح للتطبيق بتحديد موقعك
+        لإرسال الموقع مع الطلب.
+      </p>
 
 
-        <!-- الشروط -->
-
-        <div
-          class="location-box"
-          style="font-size:12px;"
-        >
-
-          <label>
-
-            <input
-              type="checkbox"
-              id="order-agreement"
-              required
-            >
-
-            أؤكد أن بيانات الطلب صحيحة، وأتحمل مسؤولية الطلب الذي أؤكده، وسيتم التواصل معي عبر المحادثة أو الهاتف بخصوص الطلب.
-
-          </label>
-
-        </div>
+      <button
+        id="location-button"
+        class="location-button"
+        type="button"
+        onclick="getCustomerLocation()"
+      >
+        📍 تحديد موقعي
+      </button>
 
 
-        <button
-          type="submit"
-          class="primary-button"
-        >
-          ✅ تأكيد إرسال الطلب
-        </button>
+      <div
+        id="location-status"
+        class="location-status"
+      >
+        لم يتم تحديد الموقع بعد
+      </div>
 
+    </section>
+
+
+    <!-- الكمية -->
+
+    <section class="order-section">
+
+      <h2>
+        🔢 الكمية
+      </h2>
+
+      <div class="quantity-control">
 
         <button
           type="button"
-          class="secondary-button"
-          onclick="history.back()"
+          onclick="changeQuantity(-1)"
         >
-          العودة للمتجر
+          −
         </button>
 
-      </form>
+        <span
+          id="quantity"
+        >
+          1
+        </span>
 
-    </div>
+        <button
+          type="button"
+          onclick="changeQuantity(1)"
+        >
+          +
+        </button>
 
-  </main>
+      </div>
+
+    </section>
 
 
-  <div
-    class="toast"
-    id="yamama-toast"
-  ></div>
+    <!-- التعهد -->
+
+    <section class="order-section warning-section">
+
+      <h2>
+        ⚠️ تنبيه
+      </h2>
+
+      <p>
+        يرجى التأكد من صحة الاسم ورقم الهاتف
+        والعنوان قبل إرسال الطلب.
+      </p>
+
+      <p>
+        عند إرسال الطلب سيتم التواصل معكم
+        من إدارة دجاج اليمامة لتأكيد الطلب.
+      </p>
+
+
+      <label class="agreement">
+
+        <input
+          id="agreement"
+          type="checkbox"
+        >
+
+        <span>
+          أؤكد أن البيانات صحيحة وأنني أطلب
+          المنتج فعلياً.
+        </span>
+
+      </label>
+
+    </section>
+
+
+    <!-- زر إرسال الطلب -->
+
+    <button
+      id="submit-order"
+      class="submit-order-button"
+      type="button"
+      onclick="submitOrder()"
+    >
+      🐔 إرسال الطلب
+    </button>
+
+
+    <button
+      class="back-button"
+      type="button"
+      onclick="window.location.href='index.html'"
+    >
+      العودة إلى المتجر
+    </button>
+
+
+  </div>
+
+</main>
 
 
 <script>
@@ -230,86 +263,40 @@
 
 
 /* =========================================
-   المنتج المختار
+   المتغيرات
    ========================================= */
 
-let selectedProduct = null;
+let quantity = 1;
+
+let customerLatitude = null;
+
+let customerLongitude = null;
 
 
 /* =========================================
-   الموقع
+   تحميل الطلب
    ========================================= */
 
-let customerLocation = {
-
-  latitude: null,
-
-  longitude: null
-
-};
-
-
-/* =========================================
-   تحميل المنتج
-   ========================================= */
-
-function loadSelectedProduct() {
+function getLastOrder() {
 
   const saved =
     localStorage.getItem(
-      "yamama_selected_product"
-    );
-
-
-  const container =
-    document.getElementById(
-      "selected-product"
+      "yamama_last_order"
     );
 
 
   if (!saved) {
-
-    container.innerHTML =
-      "لم يتم اختيار منتج.";
-
-    return;
-
+    return null;
   }
 
 
   try {
 
-    selectedProduct =
-      JSON.parse(saved);
+    return JSON.parse(saved);
 
+  } catch {
 
-    container.innerHTML = `
-
-      <strong>
-        المنتج:
-      </strong>
-
-      ${escapeHTML(
-        selectedProduct.name
-      )}
-
-      <br>
-
-      <strong>
-        السعر:
-      </strong>
-
-      ${escapeHTML(
-        selectedProduct.price
-      )}
-      ل.س
-
-    `;
-
-  } catch (error) {
-
-    container.innerHTML =
-      "تعذر تحميل المنتج.";
+    return null;
 
   }
 
@@ -317,16 +304,88 @@ function loadSelectedProduct() {
 
 
 /* =========================================
-   تحديد الموقع
+   عرض المنتج
    ========================================= */
 
-document
-  .getElementById("location-button")
-  .addEventListener(
-    "click",
-    getCustomerLocation
-  );
+function loadProduct() {
 
+  const order =
+    getLastOrder();
+
+
+  const box =
+    document.getElementById(
+      "selected-product"
+    );
+
+
+  if (!order) {
+
+    box.innerHTML = `
+
+      <p>
+        لا يوجد منتج محدد.
+      </p>
+
+      <button
+        class="back-button"
+        onclick="window.location.href='index.html'"
+      >
+        العودة إلى المتجر
+      </button>
+
+    `;
+
+    return;
+
+  }
+
+
+  box.innerHTML = `
+
+    <div class="selected-product-name">
+      ${escapeHTML(order.productName)}
+    </div>
+
+    <div class="selected-product-price">
+      السعر: ${escapeHTML(order.price)} ل.س
+    </div>
+
+  `;
+
+}
+
+
+/* =========================================
+   تغيير الكمية
+   ========================================= */
+
+function changeQuantity(amount) {
+
+  quantity += amount;
+
+
+  if (quantity < 1) {
+    quantity = 1;
+  }
+
+
+  if (quantity > 100) {
+    quantity = 100;
+  }
+
+
+  document.getElementById(
+    "quantity"
+  ).textContent =
+    quantity;
+
+}
+
+
+/* =========================================
+   تحديد الموقع
+   ========================================= */
 
 function getCustomerLocation() {
 
@@ -336,56 +395,118 @@ function getCustomerLocation() {
     );
 
 
+  const button =
+    document.getElementById(
+      "location-button"
+    );
+
+
   if (!navigator.geolocation) {
 
     status.textContent =
-      "المتصفح لا يدعم تحديد الموقع.";
+      "❌ جهازك لا يدعم تحديد الموقع.";
 
     return;
 
   }
 
 
+  button.disabled =
+    true;
+
+
+  button.textContent =
+    "⏳ جارٍ تحديد موقعك...";
+
+
   status.textContent =
-    "جاري تحديد موقعك...";
+    "يرجى السماح بالوصول إلى الموقع";
 
 
   navigator.geolocation.getCurrentPosition(
 
     function(position) {
 
-      customerLocation.latitude =
+      customerLatitude =
         position.coords.latitude;
 
-      customerLocation.longitude =
+
+      customerLongitude =
         position.coords.longitude;
 
 
       status.innerHTML = `
 
-        <span class="location-success">
+        ✅ تم تحديد موقعك بنجاح
 
-          ✓ تم تحديد موقع التوصيل بنجاح
+        <br>
 
-        </span>
+        خط العرض:
+        ${customerLatitude.toFixed(6)}
+
+        <br>
+
+        خط الطول:
+        ${customerLongitude.toFixed(6)}
 
       `;
 
+
+      button.disabled =
+        false;
+
+
+      button.textContent =
+        "📍 تحديث موقعي";
+
     },
+
 
     function(error) {
 
-      status.textContent =
-        "لم يتم السماح بتحديد الموقع. يمكنك كتابة العنوان يدوياً.";
+      customerLatitude =
+        null;
+
+
+      customerLongitude =
+        null;
+
+
+      button.disabled =
+        false;
+
+
+      button.textContent =
+        "📍 تحديد موقعي";
+
+
+      if (
+        error.code === 1
+      ) {
+
+        status.textContent =
+          "❌ تم رفض إذن الموقع. اسمح للموقع من إعدادات المتصفح.";
+
+      } else {
+
+        status.textContent =
+          "❌ تعذر تحديد موقعك. حاول مرة أخرى.";
+
+      }
 
     },
 
     {
-      enableHighAccuracy: true,
 
-      timeout: 10000,
+      enableHighAccuracy:
+        true,
 
-      maximumAge: 0
+      timeout:
+        15000,
+
+      maximumAge:
+        0
+
     }
 
   );
@@ -397,24 +518,20 @@ function getCustomerLocation() {
    إرسال الطلب
    ========================================= */
 
-document
-  .getElementById("order-form")
-  .addEventListener(
-    "submit",
-    submitOrder
-  );
+function submitOrder() {
+
+  const order =
+    getLastOrder();
 
 
-function submitOrder(event) {
+  if (!order) {
 
-  event.preventDefault();
-
-
-  if (!selectedProduct) {
-
-    showMessage(
-      "لم يتم اختيار منتج."
+    alert(
+      "لا يوجد طلب."
     );
+
+    window.location.href =
+      "index.html";
 
     return;
 
@@ -448,29 +565,44 @@ function submitOrder(event) {
       .trim();
 
 
-  const quantity =
-    Number(
-      document
-        .getElementById(
-          "quantity"
-        )
-        .value
-    );
-
-
-  const notes =
+  const agreement =
     document
       .getElementById(
-        "order-notes"
+        "agreement"
       )
-      .value
-      .trim();
+      .checked;
 
 
-  if (!name || !phone || !address) {
+  /* ===============================
+     التحقق
+     =============================== */
 
-    showMessage(
-      "يرجى إكمال بياناتك."
+  if (!name) {
+
+    alert(
+      "يرجى كتابة الاسم الكامل."
+    );
+
+    return;
+
+  }
+
+
+  if (!phone) {
+
+    alert(
+      "يرجى كتابة رقم الهاتف."
+    );
+
+    return;
+
+  }
+
+
+  if (!address) {
+
+    alert(
+      "يرجى كتابة عنوان التوصيل."
     );
 
     return;
@@ -479,12 +611,12 @@ function submitOrder(event) {
 
 
   if (
-    !quantity ||
-    quantity < 1
+    customerLatitude === null ||
+    customerLongitude === null
   ) {
 
-    showMessage(
-      "يرجى تحديد الكمية."
+    alert(
+      "يرجى تحديد موقع التوصيل أولاً."
     );
 
     return;
@@ -492,57 +624,56 @@ function submitOrder(event) {
   }
 
 
-  const order = {
+  if (!agreement) {
 
-    id:
-      "YM-" +
-      Date.now(),
+    alert(
+      "يرجى تأكيد صحة البيانات والطلب."
+    );
 
-    productId:
-      selectedProduct.id,
+    return;
 
-    productName:
-      selectedProduct.name,
-
-    price:
-      selectedProduct.price,
-
-    quantity:
-      quantity,
-
-    customerName:
-      name,
-
-    customerPhone:
-      phone,
-
-    customerAddress:
-      address,
-
-    latitude:
-      customerLocation.latitude,
-
-    longitude:
-      customerLocation.longitude,
-
-    notes:
-      notes,
-
-    status:
-      "received",
-
-    createdAt:
-      new Date().toISOString()
-
-  };
+  }
 
 
-  /*
-    حفظ مؤقت محلي.
+  /* ===============================
+     تحديث بيانات الطلب
+     =============================== */
 
-    لاحقاً سنستبدل هذا بـ Firebase
-    حتى يصل الطلب الحقيقي إلى لوحة المدير.
-  */
+  order.customerName =
+    name;
+
+
+  order.customerPhone =
+    phone;
+
+
+  order.customerAddress =
+    address;
+
+
+  order.latitude =
+    customerLatitude;
+
+
+  order.longitude =
+    customerLongitude;
+
+
+  order.quantity =
+    quantity;
+
+
+  order.status =
+    "تم الاستلام";
+
+
+  order.createdAt =
+    new Date().toISOString();
+
+
+  /* ===============================
+     حفظ الطلب
+     =============================== */
 
   localStorage.setItem(
     "yamama_last_order",
@@ -550,20 +681,44 @@ function submitOrder(event) {
   );
 
 
-  showMessage(
-    "✓ تم تجهيز الطلب بنجاح."
+  /* ===============================
+     حفظ قائمة الطلبات
+     =============================== */
+
+  let orders = [];
+
+
+  try {
+
+    orders =
+      JSON.parse(
+        localStorage.getItem(
+          "yamama_orders"
+        ) || "[]"
+      );
+
+  } catch {
+
+    orders = [];
+
+  }
+
+
+  orders.push(order);
+
+
+  localStorage.setItem(
+    "yamama_orders",
+    JSON.stringify(orders)
   );
 
 
-  setTimeout(
-    function() {
+  /* ===============================
+     الانتقال للمحادثة
+     =============================== */
 
-      window.location.href =
-        "tracking.html";
-
-    },
-    1000
-  );
+  window.location.href =
+    "chat.html";
 
 }
 
@@ -605,47 +760,21 @@ function escapeHTML(value) {
 
 
 /* =========================================
-   رسالة
+   التشغيل
    ========================================= */
 
-function showMessage(message) {
+document.addEventListener(
+  "DOMContentLoaded",
+  function() {
 
-  const toast =
-    document.getElementById(
-      "yamama-toast"
-    );
+    loadProduct();
 
-
-  toast.textContent =
-    message;
-
-
-  toast.classList.add(
-    "show"
-  );
-
-
-  setTimeout(
-    function() {
-
-      toast.classList.remove(
-        "show"
-      );
-
-    },
-    2500
-  );
-
-}
-
-
-/* =========================================
-   بدء الصفحة
-   ========================================= */
-
-loadSelectedProduct();
+  }
+);
 
 </script>
 
+
 </body>
+
 </html>
