@@ -2,6 +2,7 @@
    دجاج اليمامة - app.js
    ========================================= */
 
+const apiKey = "AQ.Ab8RN6KUuahNyqDAiCX6owjD5BpyyDBcbgsJk9YR0zOu_yRkxw";
 "use strict";
 
 /* -----------------------------------------
@@ -368,18 +369,6 @@ function openOrderForm(productId) {
     JSON.stringify(product)
   );
 
-  /*
-    في المرحلة القادمة سننشئ
-    نافذة الطلب الحقيقية التي تحتوي:
-
-    الاسم
-    رقم الهاتف
-    العنوان
-    تحديد الموقع
-    الكمية
-    الملاحظات
-  */
-
   if (
     typeof window.openCustomerOrder ===
     "function"
@@ -486,10 +475,6 @@ function initYamamaApp() {
   loadTicker();
 
   renderProducts();
-
-  /*
-    تشغيل PWA
-  */
 
   if (
     "serviceWorker" in navigator
