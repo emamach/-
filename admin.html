@@ -4,15 +4,9 @@
 <head>
   <meta charset="UTF-8">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <meta
-    name="theme-color"
-    content="#1769aa"
-  >
+  <meta name="theme-color" content="#1769aa">
 
   <link
     rel="icon"
@@ -29,218 +23,260 @@
 
 <body>
 
-  <main>
+<main>
 
-    <div class="admin-container">
+  <div class="admin-container">
 
-      <div class="admin-header">
+    <!-- ================================
+         رأس لوحة الإدارة
+         ================================ -->
 
-        <img
-          src="assets/icon-192.png"
-          alt="دجاج اليمامة"
-          class="admin-logo"
-        >
+    <div class="admin-header">
 
-        <h1>
-          لوحة إدارة دجاج اليمامة
-        </h1>
-
-        <p>
-          إدارة المنتجات والعروض والطلبات
-        </p>
-
-      </div>
-
-
-      <!-- تسجيل دخول المدير -->
-
-      <section
-        id="admin-login"
-        class="admin-section"
+      <img
+        src="assets/icon-192.png"
+        alt="شعار دجاج اليمامة"
+        class="admin-logo"
       >
 
+      <h1>
+        لوحة إدارة دجاج اليمامة
+      </h1>
+
+      <p>
+        إدارة المنتجات والعروض والطلبات
+      </p>
+
+    </div>
+
+
+    <!-- ================================
+         تسجيل الدخول
+         ================================ -->
+
+    <section
+      id="admin-login"
+      class="admin-section"
+    >
+
+      <h2>
+        🔐 دخول المدير
+      </h2>
+
+      <input
+        id="admin-password"
+        type="password"
+        placeholder="كلمة مرور المدير"
+        autocomplete="current-password"
+      >
+
+      <button
+        class="primary-button"
+        type="button"
+        onclick="adminLogin()"
+      >
+        دخول
+      </button>
+
+      <p
+        id="login-message"
+        class="admin-message"
+      ></p>
+
+    </section>
+
+
+    <!-- ================================
+         لوحة التحكم
+         ================================ -->
+
+    <section
+      id="admin-dashboard"
+      style="display:none;"
+    >
+
+
+      <!-- ================================
+           العروض والشريط
+           ================================ -->
+
+      <div class="admin-section">
+
         <h2>
-          🔐 دخول المدير
+          📢 العروض والشريط المتحرك
         </h2>
 
+        <label>
+          نص الشريط المتحرك
+        </label>
+
         <input
-          id="admin-password"
-          type="password"
-          placeholder="كلمة مرور المدير"
+          id="admin-ticker"
+          type="text"
+          placeholder="اكتب نص العرض"
         >
 
         <button
           class="primary-button"
-          onclick="adminLogin()"
+          type="button"
+          onclick="saveTicker()"
         >
-          دخول
+          💾 حفظ الشريط
         </button>
 
-        <p
-          id="login-message"
-          class="admin-message"
-        ></p>
-
-      </section>
+      </div>
 
 
-      <!-- لوحة التحكم -->
+      <!-- ================================
+           عامل التوصيل
+           ================================ -->
 
-      <section
-        id="admin-dashboard"
-        style="display:none;"
+      <div class="admin-section">
+
+        <h2>
+          🛵 بيانات عامل التوصيل
+        </h2>
+
+        <label>
+          اسم عامل التوصيل
+        </label>
+
+        <input
+          id="admin-driver-name"
+          type="text"
+          placeholder="اسم عامل التوصيل"
+        >
+
+        <label>
+          رقم هاتف عامل التوصيل
+        </label>
+
+        <input
+          id="admin-driver-phone"
+          type="tel"
+          placeholder="رقم الهاتف"
+        >
+
+        <button
+          class="primary-button"
+          type="button"
+          onclick="saveDriver()"
+        >
+          💾 حفظ بيانات التوصيل
+        </button>
+
+      </div>
+
+
+      <!-- ================================
+           الكاميرات
+           ================================ -->
+
+      <div class="admin-section">
+
+        <h2>
+          📹 إعدادات البث المباشر
+        </h2>
+
+        <label>
+          رابط الكاميرا الأولى
+        </label>
+
+        <input
+          id="admin-camera-1"
+          type="url"
+          placeholder="ضع رابط بث الكاميرا الأولى"
+        >
+
+        <label>
+          رابط الكاميرا الثانية
+        </label>
+
+        <input
+          id="admin-camera-2"
+          type="url"
+          placeholder="ضع رابط بث الكاميرا الثانية"
+        >
+
+        <label>
+          مدة البث بالثواني
+        </label>
+
+        <input
+          id="admin-broadcast-duration"
+          type="number"
+          min="10"
+          max="3600"
+          value="45"
+        >
+
+        <button
+          class="primary-button"
+          type="button"
+          onclick="saveCameras()"
+        >
+          💾 حفظ إعدادات البث
+        </button>
+
+      </div>
+
+
+      <!-- ================================
+           إدارة المنتجات
+           ================================ -->
+
+      <div class="admin-section">
+
+        <h2>
+          🐔 إدارة المنتجات
+        </h2>
+
+        <p class="admin-help">
+          يمكنك تغيير اسم المنتج والسعر والصورة.
+        </p>
+
+        <div
+          id="admin-products"
+          class="admin-products"
+        ></div>
+
+        <button
+          class="primary-button"
+          type="button"
+          onclick="addNewProduct()"
+        >
+          ➕ إضافة منتج جديد
+        </button>
+
+      </div>
+
+
+      <!-- ================================
+           الخروج
+           ================================ -->
+
+      <button
+        class="logout-button"
+        type="button"
+        onclick="adminLogout()"
       >
-
-        <!-- الشريط -->
-
-        <div class="admin-section">
-
-          <h2>
-            📢 الشريط المتحرك
-          </h2>
-
-          <input
-            id="admin-ticker"
-            type="text"
-            placeholder="اكتب نص العرض"
-          >
-
-          <button
-            class="primary-button"
-            onclick="saveTicker()"
-          >
-            💾 حفظ الشريط
-          </button>
-
-        </div>
+        تسجيل الخروج
+      </button>
 
 
-        <!-- معلومات عامل التوصيل -->
+      <button
+        class="secondary-button"
+        type="button"
+        onclick="window.location.href='index.html'"
+      >
+        🏠 العودة إلى المتجر
+      </button>
 
-        <div class="admin-section">
+    </section>
 
-          <h2>
-            🛵 عامل التوصيل
-          </h2>
+  </div>
 
-          <input
-            id="admin-driver-name"
-            type="text"
-            placeholder="اسم عامل التوصيل"
-          >
-
-          <input
-            id="admin-driver-phone"
-            type="tel"
-            placeholder="رقم الهاتف"
-          >
-
-          <button
-            class="primary-button"
-            onclick="saveDriver()"
-          >
-            💾 حفظ بيانات التوصيل
-          </button>
-
-        </div>
-
-
-        <!-- الكاميرات -->
-
-        <div class="admin-section">
-
-          <h2>
-            📹 إعدادات الكاميرات
-          </h2>
-
-          <label>
-            رابط الكاميرا الأولى
-          </label>
-
-          <input
-            id="admin-camera-1"
-            type="url"
-            placeholder="رابط البث للكاميرا الأولى"
-          >
-
-          <label>
-            رابط الكاميرا الثانية
-          </label>
-
-          <input
-            id="admin-camera-2"
-            type="url"
-            placeholder="رابط البث للكاميرا الثانية"
-          >
-
-          <label>
-            مدة البث بالثواني
-          </label>
-
-          <input
-            id="admin-broadcast-duration"
-            type="number"
-            min="10"
-            value="45"
-          >
-
-          <button
-            class="primary-button"
-            onclick="saveCameras()"
-          >
-            💾 حفظ إعدادات الكاميرات
-          </button>
-
-        </div>
-
-
-        <!-- المنتجات -->
-
-        <div class="admin-section">
-
-          <h2>
-            🐔 المنتجات
-          </h2>
-
-          <div
-            id="admin-products"
-            class="admin-products"
-          >
-          </div>
-
-
-          <button
-            class="primary-button"
-            onclick="addNewProduct()"
-          >
-            ➕ إضافة منتج جديد
-          </button>
-
-        </div>
-
-
-        <!-- تسجيل الخروج -->
-
-        <button
-          class="logout-button"
-          onclick="adminLogout()"
-        >
-          تسجيل الخروج
-        </button>
-
-
-        <button
-          class="secondary-button"
-          onclick="window.location.href='index.html'"
-        >
-          العودة إلى المتجر
-        </button>
-
-      </section>
-
-    </div>
-
-  </main>
+</main>
 
 
 <script>
@@ -249,63 +285,46 @@
 
 
 /* =========================================
-   كلمة المرور المؤقتة
+   كلمة المرور التجريبية
    ========================================= */
 
-/*
-  هذه كلمة مرور تجريبية فقط.
-
-  في مرحلة Firebase سنستبدلها
-  بنظام دخول حقيقي وآمن للمدير.
-*/
-
-const ADMIN_PASSWORD =
-  "yamama123";
+const ADMIN_PASSWORD = "yamama123";
 
 
 /* =========================================
-   تسجيل الدخول
+   تسجيل دخول المدير
    ========================================= */
 
 function adminLogin() {
 
   const password =
-    document.getElementById(
-      "admin-password"
-    ).value;
-
+    document
+      .getElementById("admin-password")
+      .value;
 
   const message =
-    document.getElementById(
-      "login-message"
-    );
+    document
+      .getElementById("login-message");
 
 
-  if (
-    password ===
-    ADMIN_PASSWORD
-  ) {
+  if (password === ADMIN_PASSWORD) {
 
     sessionStorage.setItem(
       "yamama_admin",
       "true"
     );
 
+    document
+      .getElementById("admin-login")
+      .style.display = "none";
 
-    document.getElementById(
-      "admin-login"
-    ).style.display =
-      "none";
+    document
+      .getElementById("admin-dashboard")
+      .style.display = "block";
 
-
-    document.getElementById(
-      "admin-dashboard"
-    ).style.display =
-      "block";
-
+    message.textContent = "";
 
     loadAdminData();
-
 
   } else {
 
@@ -318,7 +337,7 @@ function adminLogin() {
 
 
 /* =========================================
-   التحقق من الدخول
+   التحقق من تسجيل الدخول
    ========================================= */
 
 function checkAdminLogin() {
@@ -329,21 +348,15 @@ function checkAdminLogin() {
     );
 
 
-  if (
-    logged === "true"
-  ) {
+  if (logged === "true") {
 
-    document.getElementById(
-      "admin-login"
-    ).style.display =
-      "none";
+    document
+      .getElementById("admin-login")
+      .style.display = "none";
 
-
-    document.getElementById(
-      "admin-dashboard"
-    ).style.display =
-      "block";
-
+    document
+      .getElementById("admin-dashboard")
+      .style.display = "block";
 
     loadAdminData();
 
@@ -368,77 +381,87 @@ function adminLogout() {
 
 
 /* =========================================
-   تحميل البيانات
-   ========================================= */
-
-function loadAdminData() {
-
-  const settings =
-    JSON.parse(
-      localStorage.getItem(
-        "yamama_settings"
-      ) || "{}"
-    );
-
-
-  document.getElementById(
-    "admin-ticker"
-  ).value =
-    settings.ticker || "";
-
-
-  document.getElementById(
-    "admin-driver-name"
-  ).value =
-    settings.driverName || "";
-
-
-  document.getElementById(
-    "admin-driver-phone"
-  ).value =
-    settings.driverPhone || "";
-
-
-  document.getElementById(
-    "admin-camera-1"
-  ).value =
-    settings.camera1 || "";
-
-
-  document.getElementById(
-    "admin-camera-2"
-  ).value =
-    settings.camera2 || "";
-
-
-  document.getElementById(
-    "admin-broadcast-duration"
-  ).value =
-    settings.broadcastDuration || 45;
-
-
-  renderAdminProducts();
-
-}
-
-
-/* =========================================
    الإعدادات
    ========================================= */
 
 function getSettings() {
 
+  const saved =
+    localStorage.getItem(
+      "yamama_settings"
+    );
+
+
+  if (!saved) {
+
+    return {
+
+      ticker:
+        "🔥 أهلاً بكم في متجر دجاج اليمامة - دجاج طازج يومياً وتوصيل مباشر 🔥",
+
+      driverName:
+        "",
+
+      driverPhone:
+        "",
+
+      camera1:
+        "",
+
+      camera2:
+        "",
+
+      broadcastDuration:
+        45
+
+    };
+
+  }
+
+
   try {
 
-    return JSON.parse(
-      localStorage.getItem(
-        "yamama_settings"
-      ) || "{}"
-    );
+    return {
+
+      ticker:
+        "🔥 أهلاً بكم في متجر دجاج اليمامة - دجاج طازج يومياً وتوصيل مباشر 🔥",
+
+      driverName:
+        "",
+
+      driverPhone:
+        "",
+
+      camera1:
+        "",
+
+      camera2:
+        "",
+
+      broadcastDuration:
+        45,
+
+      ...JSON.parse(saved)
+
+    };
 
   } catch {
 
-    return {};
+    return {
+
+      ticker: "",
+
+      driverName: "",
+
+      driverPhone: "",
+
+      camera1: "",
+
+      camera2: "",
+
+      broadcastDuration: 45
+
+    };
 
   }
 
@@ -456,6 +479,57 @@ function saveSettings(settings) {
 
 
 /* =========================================
+   تحميل بيانات لوحة الإدارة
+   ========================================= */
+
+function loadAdminData() {
+
+  const settings =
+    getSettings();
+
+
+  document
+    .getElementById("admin-ticker")
+    .value =
+      settings.ticker || "";
+
+
+  document
+    .getElementById("admin-driver-name")
+    .value =
+      settings.driverName || "";
+
+
+  document
+    .getElementById("admin-driver-phone")
+    .value =
+      settings.driverPhone || "";
+
+
+  document
+    .getElementById("admin-camera-1")
+    .value =
+      settings.camera1 || "";
+
+
+  document
+    .getElementById("admin-camera-2")
+    .value =
+      settings.camera2 || "";
+
+
+  document
+    .getElementById("admin-broadcast-duration")
+    .value =
+      settings.broadcastDuration || 45;
+
+
+  renderAdminProducts();
+
+}
+
+
+/* =========================================
    حفظ الشريط
    ========================================= */
 
@@ -466,9 +540,10 @@ function saveTicker() {
 
 
   settings.ticker =
-    document.getElementById(
-      "admin-ticker"
-    ).value;
+    document
+      .getElementById("admin-ticker")
+      .value
+      .trim();
 
 
   saveSettings(settings);
@@ -482,7 +557,7 @@ function saveTicker() {
 
 
 /* =========================================
-   حفظ عامل التوصيل
+   حفظ بيانات عامل التوصيل
    ========================================= */
 
 function saveDriver() {
@@ -492,15 +567,17 @@ function saveDriver() {
 
 
   settings.driverName =
-    document.getElementById(
-      "admin-driver-name"
-    ).value;
+    document
+      .getElementById("admin-driver-name")
+      .value
+      .trim();
 
 
   settings.driverPhone =
-    document.getElementById(
-      "admin-driver-phone"
-    ).value;
+    document
+      .getElementById("admin-driver-phone")
+      .value
+      .trim();
 
 
   saveSettings(settings);
@@ -524,22 +601,26 @@ function saveCameras() {
 
 
   settings.camera1 =
-    document.getElementById(
-      "admin-camera-1"
-    ).value;
+    document
+      .getElementById("admin-camera-1")
+      .value
+      .trim();
 
 
   settings.camera2 =
-    document.getElementById(
-      "admin-camera-2"
-    ).value;
+    document
+      .getElementById("admin-camera-2")
+      .value
+      .trim();
 
 
   settings.broadcastDuration =
     Number(
-      document.getElementById(
-        "admin-broadcast-duration"
-      ).value
+      document
+        .getElementById(
+          "admin-broadcast-duration"
+        )
+        .value
     ) || 45;
 
 
@@ -547,14 +628,135 @@ function saveCameras() {
 
 
   alert(
-    "✓ تم حفظ إعدادات الكاميرات"
+    "✓ تم حفظ إعدادات البث"
   );
 
 }
 
 
 /* =========================================
-   عرض المنتجات
+   الحصول على المنتجات
+   ========================================= */
+
+function getProducts() {
+
+  const saved =
+    localStorage.getItem(
+      "yamama_products"
+    );
+
+
+  if (!saved) {
+
+    const products = [
+
+      {
+        id: "p1",
+        name: "قطع دجاج",
+        price: "18000",
+        image: "",
+        active: true
+      },
+
+      {
+        id: "p2",
+        name: "دجاج كامل",
+        price: "25000",
+        image: "",
+        active: true
+      },
+
+      {
+        id: "p3",
+        name: "صدور دجاج",
+        price: "24000",
+        image: "",
+        active: true
+      },
+
+      {
+        id: "p4",
+        name: "أجنحة دجاج",
+        price: "16000",
+        image: "",
+        active: true
+      },
+
+      {
+        id: "p5",
+        name: "أوراك دجاج",
+        price: "15000",
+        image: "",
+        active: true
+      },
+
+      {
+        id: "p6",
+        name: "كبدة دجاج",
+        price: "12000",
+        image: "",
+        active: true
+      },
+
+      {
+        id: "p7",
+        name: "أعناق دجاج",
+        price: "10000",
+        image: "",
+        active: true
+      },
+
+      {
+        id: "p8",
+        name: "قوانص دجاج",
+        price: "11000",
+        image: "",
+        active: true
+      }
+
+    ];
+
+
+    localStorage.setItem(
+      "yamama_products",
+      JSON.stringify(products)
+    );
+
+
+    return products;
+
+  }
+
+
+  try {
+
+    return JSON.parse(saved);
+
+  } catch {
+
+    return [];
+
+  }
+
+}
+
+
+/* =========================================
+   حفظ المنتجات
+   ========================================= */
+
+function saveProducts(products) {
+
+  localStorage.setItem(
+    "yamama_products",
+    JSON.stringify(products)
+  );
+
+}
+
+
+/* =========================================
+   عرض المنتجات داخل لوحة الإدارة
    ========================================= */
 
 function renderAdminProducts() {
@@ -565,23 +767,13 @@ function renderAdminProducts() {
     );
 
 
-  let products = [];
-
-
-  try {
-
-    products =
-      JSON.parse(
-        localStorage.getItem(
-          "yamama_products"
-        ) || "[]"
-      );
-
-  } catch {
-
-    products = [];
-
+  if (!container) {
+    return;
   }
+
+
+  const products =
+    getProducts();
 
 
   container.innerHTML = "";
@@ -600,7 +792,36 @@ function renderAdminProducts() {
         "admin-product-item";
 
 
+      const imagePreview =
+        product.image
+
+          ? `
+            <img
+              src="${product.image}"
+              class="admin-product-preview"
+              alt="${escapeHTML(product.name)}"
+            >
+          `
+
+          : `
+            <div class="admin-no-image">
+              📷 لا توجد صورة
+            </div>
+          `;
+
+
       item.innerHTML = `
+
+        <div class="admin-product-preview-box">
+
+          ${imagePreview}
+
+        </div>
+
+
+        <label>
+          اسم المنتج
+        </label>
 
         <input
           type="text"
@@ -608,31 +829,49 @@ function renderAdminProducts() {
           data-name
         >
 
+
+        <label>
+          السعر
+        </label>
+
         <input
           type="number"
           value="${escapeHTML(product.price)}"
           data-price
+          min="0"
         >
 
-        <input
-          type="text"
-          value="${escapeHTML(product.image || "")}"
-          data-image
-          placeholder="رابط الصورة"
-        >
+
+        <label class="image-upload-button">
+
+          📷 اختيار صورة من استديو الهاتف
+
+          <input
+            type="file"
+            accept="image/*"
+            data-image-file
+            hidden
+            onchange="previewProductImage(this)"
+          >
+
+        </label>
+
 
         <button
           class="primary-button"
+          type="button"
           onclick="saveProduct('${product.id}', this)"
         >
-          💾 حفظ
+          💾 حفظ المنتج
         </button>
+
 
         <button
           class="delete-button"
+          type="button"
           onclick="deleteProduct('${product.id}')"
         >
-          🗑️ حذف
+          🗑️ حذف المنتج
         </button>
 
       `;
@@ -647,39 +886,135 @@ function renderAdminProducts() {
 
 
 /* =========================================
-   حفظ المنتج
+   معاينة الصورة المختارة
+   ========================================= */
+
+function previewProductImage(input) {
+
+  const file =
+    input.files[0];
+
+
+  if (!file) {
+    return;
+  }
+
+
+  if (
+    !file.type.startsWith("image/")
+  ) {
+
+    alert(
+      "يرجى اختيار صورة فقط."
+    );
+
+    input.value = "";
+
+    return;
+
+  }
+
+
+  const item =
+    input.closest(
+      ".admin-product-item"
+    );
+
+
+  const preview =
+    item.querySelector(
+      ".admin-product-preview"
+    );
+
+
+  if (preview) {
+
+    preview.src =
+      URL.createObjectURL(file);
+
+  } else {
+
+    const box =
+      item.querySelector(
+        ".admin-product-preview-box"
+      );
+
+
+    box.innerHTML = `
+
+      <img
+        src="${URL.createObjectURL(file)}"
+        class="admin-product-preview"
+        alt="معاينة الصورة"
+      >
+
+    `;
+
+  }
+
+}
+
+
+/* =========================================
+   حفظ المنتج والصورة
    ========================================= */
 
 function saveProduct(id, button) {
 
   const item =
-    button.parentElement;
+    button.closest(
+      ".admin-product-item"
+    );
 
 
   const name =
-    item.querySelector(
-      "[data-name]"
-    ).value;
+    item
+      .querySelector("[data-name]")
+      .value
+      .trim();
 
 
   const price =
+    item
+      .querySelector("[data-price]")
+      .value
+      .trim();
+
+
+  const imageInput =
     item.querySelector(
-      "[data-price]"
-    ).value;
-
-
-  const image =
-    item.querySelector(
-      "[data-image]"
-    ).value;
-
-
-  let products =
-    JSON.parse(
-      localStorage.getItem(
-        "yamama_products"
-      ) || "[]"
+      "[data-image-file]"
     );
+
+
+  const imageFile =
+    imageInput.files[0];
+
+
+  if (!name) {
+
+    alert(
+      "يرجى كتابة اسم المنتج."
+    );
+
+    return;
+
+  }
+
+
+  if (!price) {
+
+    alert(
+      "يرجى كتابة السعر."
+    );
+
+    return;
+
+  }
+
+
+  const products =
+    getProducts();
 
 
   const product =
@@ -688,51 +1023,110 @@ function saveProduct(id, button) {
     );
 
 
-  if (!product) return;
+  if (!product) {
+
+    alert(
+      "تعذر العثور على المنتج."
+    );
+
+    return;
+
+  }
 
 
   product.name =
     name;
 
+
   product.price =
     price;
 
-  product.image =
-    image;
+
+  /*
+    إذا لم يختَر المدير صورة جديدة،
+    نحتفظ بالصورة القديمة.
+  */
+
+  if (!imageFile) {
+
+    saveProducts(products);
+
+    alert(
+      "✓ تم حفظ المنتج"
+    );
+
+    renderAdminProducts();
+
+    return;
+
+  }
 
 
-  localStorage.setItem(
-    "yamama_products",
-    JSON.stringify(products)
-  );
+  /*
+    تحويل الصورة إلى Data URL
+    لحفظها محلياً في المتصفح.
+  */
+
+  const reader =
+    new FileReader();
 
 
-  alert(
-    "✓ تم حفظ المنتج"
+  reader.onload =
+    function(event) {
+
+      product.image =
+        event.target.result;
+
+
+      saveProducts(products);
+
+
+      alert(
+        "✓ تم حفظ المنتج والصورة"
+      );
+
+
+      renderAdminProducts();
+
+    };
+
+
+  reader.onerror =
+    function() {
+
+      alert(
+        "تعذر قراءة الصورة."
+      );
+
+    };
+
+
+  reader.readAsDataURL(
+    imageFile
   );
 
 }
 
 
 /* =========================================
-   إضافة منتج
+   إضافة منتج جديد
    ========================================= */
 
 function addNewProduct() {
 
-  let products =
-    JSON.parse(
-      localStorage.getItem(
-        "yamama_products"
-      ) || "[]"
-    );
+  const products =
+    getProducts();
 
 
   const product = {
 
     id:
       "product-" +
-      Date.now(),
+      Date.now() +
+      "-" +
+      Math.random()
+        .toString(36)
+        .substring(2, 7),
 
     name:
       "منتج جديد",
@@ -752,13 +1146,15 @@ function addNewProduct() {
   products.push(product);
 
 
-  localStorage.setItem(
-    "yamama_products",
-    JSON.stringify(products)
-  );
+  saveProducts(products);
 
 
   renderAdminProducts();
+
+
+  alert(
+    "✓ تمت إضافة منتج جديد. أدخل اسمه وسعره واختر صورته ثم اضغط حفظ."
+  );
 
 }
 
@@ -769,23 +1165,19 @@ function addNewProduct() {
 
 function deleteProduct(id) {
 
-  if (
-    !confirm(
-      "هل تريد حذف هذا المنتج؟"
-    )
-  ) {
+  const answer =
+    confirm(
+      "هل أنت متأكد من حذف هذا المنتج؟"
+    );
 
+
+  if (!answer) {
     return;
-
   }
 
 
   let products =
-    JSON.parse(
-      localStorage.getItem(
-        "yamama_products"
-      ) || "[]"
-    );
+    getProducts();
 
 
   products =
@@ -795,19 +1187,21 @@ function deleteProduct(id) {
     );
 
 
-  localStorage.setItem(
-    "yamama_products",
-    JSON.stringify(products)
-  );
+  saveProducts(products);
 
 
   renderAdminProducts();
+
+
+  alert(
+    "✓ تم حذف المنتج"
+  );
 
 }
 
 
 /* =========================================
-   حماية النص
+   حماية النصوص
    ========================================= */
 
 function escapeHTML(value) {
@@ -843,7 +1237,7 @@ function escapeHTML(value) {
 
 
 /* =========================================
-   تشغيل الصفحة
+   تشغيل لوحة الإدارة
    ========================================= */
 
 checkAdminLogin();
@@ -851,5 +1245,4 @@ checkAdminLogin();
 </script>
 
 </body>
-
 </html>
