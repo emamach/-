@@ -1,0 +1,25 @@
+name: AI Update
+on:
+  push:
+    branches:
+      - main
+jobs:
+  update-code:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Call AI API
+        env:
+          GMI_API_KEY: ${{ secrets.GMI_API_KEY }}
+        run: |
+          curl -N -X POST "https://console.gmicloud.ai/api/v1/ie/recommendation/autoroute" \
+          -H "Authorization: Bearer $GMI_API_KEY" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "messages": [
+              {"role": "user", "content": "Write a haiku about the ocean"}
+            ],
+            "mode": "balanced"
+          }'
