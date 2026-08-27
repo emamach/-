@@ -15,11 +15,6 @@
   >
 
   <link
-    rel="manifest"
-    href="manifest.json"
-  >
-
-  <link
     rel="icon"
     href="assets/icon-192.png"
   >
@@ -32,108 +27,117 @@
   <title>المحادثة - دجاج اليمامة</title>
 </head>
 
+
 <body>
 
-  <!-- الشريط العلوي -->
+<main>
 
-  <div class="ticker-wrap">
+  <div class="chat-page-container">
 
-    <div class="ticker">
-      🐔 دجاج اليمامة - خدمة العملاء
+    <!-- رأس المحادثة -->
+
+    <div class="chat-page-header">
+
+      <img
+        src="assets/icon-192.png"
+        alt="دجاج اليمامة"
+        class="chat-logo"
+      >
+
+      <h1>
+        💬 محادثة دجاج اليمامة
+      </h1>
+
+      <p>
+        تواصل مباشرة مع إدارة المتجر
+      </p>
+
     </div>
 
-  </div>
 
+    <!-- معلومات الطلب -->
 
-  <!-- صفحة المحادثة -->
+    <section class="order-summary">
 
-  <main>
+      <h2>
+        📦 ملخص الطلب
+      </h2>
 
-    <div class="chat-page">
-
-      <div class="chat-page-header">
-
-        <div>
-
-          <div class="chat-page-title">
-            💬 إدارة دجاج اليمامة
-          </div>
-
-          <div class="chat-online">
-            ● خدمة العملاء
-          </div>
-
-        </div>
-
-        <button
-          class="chat-back"
-          onclick="window.location.href='index.html'"
-        >
-          رجوع
-        </button>
-
+      <div id="order-summary-content">
+        جاري تحميل الطلب...
       </div>
 
-
-      <!-- معلومات الطلب -->
-
-      <div
-        id="order-info"
-        class="chat-order-info"
-      >
-        لا يوجد طلب محدد
-      </div>
+    </section>
 
 
-      <!-- الرسائل -->
+    <!-- المحادثة -->
+
+    <section class="chat-page-box">
 
       <div
         id="messages"
         class="messages"
-      >
-
-        <div class="message manager-message">
-
-          أهلاً وسهلاً بكم في دجاج اليمامة.
-          كيف يمكننا مساعدتكم؟
-
-        </div>
-
-      </div>
+      ></div>
 
 
-      <!-- كتابة الرسالة -->
+      <!-- إدخال الرسالة -->
 
-      <form
-        id="message-form"
-        class="message-form"
-      >
+      <div class="chat-input-area">
 
-        <input
+        <textarea
           id="message-input"
-          type="text"
-          placeholder="اكتب رسالتك هنا..."
-          autocomplete="off"
-          required
-        >
+          rows="2"
+          placeholder="اكتب رسالتك للإدارة..."
+        ></textarea>
+
 
         <button
-          type="submit"
+          type="button"
+          onclick="sendMessage()"
         >
           إرسال
         </button>
 
-      </form>
+      </div>
+
+    </section>
+
+
+    <!-- أزرار الطلب -->
+
+    <div class="chat-actions">
+
+      <button
+        type="button"
+        class="track-button"
+        onclick="goTracking()"
+      >
+        📦 تتبع الطلب
+      </button>
+
+
+      <button
+        type="button"
+        class="call-button"
+        onclick="callManager()"
+      >
+        📞 الاتصال بالإدارة
+      </button>
+
+
+      <button
+        type="button"
+        class="home-button"
+        onclick="window.location.href='index.html'"
+      >
+        🏠 العودة للمتجر
+      </button>
 
     </div>
 
-  </main>
+  </div>
 
-
-  <div
-    class="toast"
-    id="yamama-toast"
-  ></div>
+</main>
 
 
 <script>
@@ -142,25 +146,11 @@
 
 
 /* =========================================
-   عناصر الصفحة
+   رقم إدارة المتجر
    ========================================= */
 
-const messages =
-  document.getElementById(
-    "messages"
-  );
-
-
-const messageForm =
-  document.getElementById(
-    "message-form"
-  );
-
-
-const messageInput =
-  document.getElementById(
-    "message-input"
-  );
+const MANAGER_PHONE =
+  "";
 
 
 /* =========================================
@@ -194,10 +184,10 @@ function getOrder() {
 
 
 /* =========================================
-   عرض معلومات الطلب
+   عرض ملخص الطلب
    ========================================= */
 
-function loadOrderInfo() {
+function renderOrder() {
 
   const order =
     getOrder();
@@ -205,14 +195,26 @@ function loadOrderInfo() {
 
   const box =
     document.getElementById(
-      "order-info"
+      "order-summary-content"
     );
 
 
   if (!order) {
 
-    box.textContent =
-      "لا يوجد طلب محدد حالياً.";
+    box.innerHTML = `
+
+      <p>
+        لا يوجد طلب محفوظ.
+      </p>
+
+      <button
+        class="home-button"
+        onclick="window.location.href='index.html'"
+      >
+        العودة إلى المتجر
+      </button>
+
+    `;
 
     return;
 
@@ -221,27 +223,70 @@ function loadOrderInfo() {
 
   box.innerHTML = `
 
-    <strong>
-      رقم الطلب:
-    </strong>
+    <div class="order-row">
 
-    ${escapeHTML(order.id)}
+      <strong>
+        رقم الطلب:
+      </strong>
 
-    <br>
+      <span>
+        ${escapeHTML(order.id)}
+      </span>
 
-    <strong>
-      المنتج:
-    </strong>
+    </div>
 
-    ${escapeHTML(order.productName)}
 
-    <br>
+    <div class="order-row">
 
-    <strong>
-      الكمية:
-    </strong>
+      <strong>
+        المنتج:
+      </strong>
 
-    ${escapeHTML(order.quantity)}
+      <span>
+        ${escapeHTML(order.productName)}
+      </span>
+
+    </div>
+
+
+    <div class="order-row">
+
+      <strong>
+        الكمية:
+      </strong>
+
+      <span>
+        ${escapeHTML(order.quantity || 1)}
+      </span>
+
+    </div>
+
+
+    <div class="order-row">
+
+      <strong>
+        السعر:
+      </strong>
+
+      <span>
+        ${escapeHTML(order.price)}
+        ل.س
+      </span>
+
+    </div>
+
+
+    <div class="order-row">
+
+      <strong>
+        الحالة:
+      </strong>
+
+      <span class="order-status">
+        ${escapeHTML(order.status || "تم الاستلام")}
+      </span>
+
+    </div>
 
   `;
 
@@ -249,14 +294,14 @@ function loadOrderInfo() {
 
 
 /* =========================================
-   تخزين الرسائل
+   تحميل الرسائل
    ========================================= */
 
 function getMessages() {
 
   const saved =
     localStorage.getItem(
-      "yamama_chat_messages"
+      "yamama_messages"
     );
 
 
@@ -278,11 +323,15 @@ function getMessages() {
 }
 
 
-function saveMessages(list) {
+/* =========================================
+   حفظ الرسائل
+   ========================================= */
+
+function saveMessages(messages) {
 
   localStorage.setItem(
-    "yamama_chat_messages",
-    JSON.stringify(list)
+    "yamama_messages",
+    JSON.stringify(messages)
   );
 
 }
@@ -294,24 +343,42 @@ function saveMessages(list) {
 
 function renderMessages() {
 
-  const list =
+  const container =
+    document.getElementById(
+      "messages"
+    );
+
+
+  const messages =
     getMessages();
 
 
-  /*
-    نترك رسالة الترحيب
-    إذا لم توجد رسائل.
-  */
+  container.innerHTML = "";
 
-  if (list.length === 0) {
+
+  if (messages.length === 0) {
+
+    container.innerHTML = `
+
+      <div class="system-message">
+
+        👋 أهلاً بك في إدارة دجاج اليمامة.
+
+        <br>
+
+        تم استلام طلبك ويمكنك التواصل معنا
+        من خلال هذه المحادثة.
+
+      </div>
+
+    `;
+
     return;
+
   }
 
 
-  messages.innerHTML = "";
-
-
-  list.forEach(
+  messages.forEach(
     message => {
 
       const bubble =
@@ -321,19 +388,25 @@ function renderMessages() {
 
 
       bubble.className =
-        "message " +
-        (
-          message.sender === "manager"
-            ? "manager-message"
-            : "customer-message"
-        );
+        message.sender === "customer"
+          ? "message customer"
+          : "message manager";
 
 
-      bubble.textContent =
-        message.text;
+      bubble.innerHTML = `
+
+        <div class="message-text">
+          ${escapeHTML(message.text)}
+        </div>
+
+        <div class="message-time">
+          ${formatTime(message.time)}
+        </div>
+
+      `;
 
 
-      messages.appendChild(
+      container.appendChild(
         bubble
       );
 
@@ -341,8 +414,8 @@ function renderMessages() {
   );
 
 
-  messages.scrollTop =
-    messages.scrollHeight;
+  container.scrollTop =
+    container.scrollHeight;
 
 }
 
@@ -351,89 +424,172 @@ function renderMessages() {
    إرسال رسالة
    ========================================= */
 
-messageForm.addEventListener(
-  "submit",
-  function(event) {
+function sendMessage() {
 
-    event.preventDefault();
-
-
-    const text =
-      messageInput.value.trim();
-
-
-    if (!text) {
-      return;
-    }
-
-
-    const list =
-      getMessages();
-
-
-    list.push({
-
-      sender:
-        "customer",
-
-      text:
-        text,
-
-      time:
-        new Date().toISOString()
-
-    });
-
-
-    saveMessages(list);
-
-
-    messageInput.value =
-      "";
-
-
-    renderMessages();
-
-
-    /*
-      الرد التجريبي.
-
-      لاحقاً سيتم استبداله
-      برسالة حقيقية من المدير
-      عبر Firebase.
-    */
-
-    setTimeout(
-      function() {
-
-        const current =
-          getMessages();
-
-
-        current.push({
-
-          sender:
-            "manager",
-
-          text:
-            "تم استلام رسالتكم، وسيتم الرد عليكم من الإدارة.",
-
-          time:
-            new Date().toISOString()
-
-        });
-
-
-        saveMessages(current);
-
-        renderMessages();
-
-      },
-      1000
+  const input =
+    document.getElementById(
+      "message-input"
     );
 
+
+  const text =
+    input.value.trim();
+
+
+  if (!text) {
+
+    return;
+
   }
-);
+
+
+  const order =
+    getOrder();
+
+
+  const messages =
+    getMessages();
+
+
+  messages.push({
+
+    id:
+      "msg-" +
+      Date.now(),
+
+    orderId:
+      order
+        ? order.id
+        : "",
+
+    sender:
+      "customer",
+
+    text:
+      text,
+
+    time:
+      new Date().toISOString()
+
+  });
+
+
+  saveMessages(
+    messages
+  );
+
+
+  input.value =
+    "";
+
+
+  renderMessages();
+
+}
+
+
+/* =========================================
+   زر Enter
+   ========================================= */
+
+document
+  .getElementById(
+    "message-input"
+  )
+  .addEventListener(
+    "keydown",
+    function(event) {
+
+      if (
+        event.key === "Enter" &&
+        !event.shiftKey
+      ) {
+
+        event.preventDefault();
+
+        sendMessage();
+
+      }
+
+    }
+  );
+
+
+/* =========================================
+   الانتقال للتتبع
+   ========================================= */
+
+function goTracking() {
+
+  const order =
+    getOrder();
+
+
+  if (!order) {
+
+    alert(
+      "لا يوجد طلب محفوظ."
+    );
+
+    return;
+
+  }
+
+
+  window.location.href =
+    "tracking.html";
+
+}
+
+
+/* =========================================
+   الاتصال بالإدارة
+   ========================================= */
+
+function callManager() {
+
+  if (!MANAGER_PHONE) {
+
+    alert(
+      "سيتم إضافة رقم إدارة دجاج اليمامة عند إعداد بيانات الإدارة."
+    );
+
+    return;
+
+  }
+
+
+  window.location.href =
+    "tel:" +
+    MANAGER_PHONE;
+
+}
+
+
+/* =========================================
+   تنسيق الوقت
+   ========================================= */
+
+function formatTime(value) {
+
+  try {
+
+    return new Date(value)
+      .toLocaleTimeString(
+        "ar",
+        {
+          hour: "2-digit",
+          minute: "2-digit"
+        }
+      );
+
+  } catch {
+
+    return "";
+
+  }
+
+}
 
 
 /* =========================================
@@ -473,12 +629,19 @@ function escapeHTML(value) {
 
 
 /* =========================================
-   التشغيل
+   تشغيل الصفحة
    ========================================= */
 
-loadOrderInfo();
+document.addEventListener(
+  "DOMContentLoaded",
+  function() {
 
-renderMessages();
+    renderOrder();
+
+    renderMessages();
+
+  }
+);
 
 </script>
 
