@@ -1,349 +1,383 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-
 <head>
-
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>دجاج اليمامة - منتجاتنا</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+    body {
+      background: linear-gradient(180deg, #4b8ccb 0%, #296096 100%);
+      color: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 15px;
+    }
 
-  <meta
-    name="theme-color"
-    content="#1769aa"
-  >
+    .container {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-  <link
-    rel="icon"
-    href="assets/icon-192.png"
-  >
+    /* Header Section */
+    .top-bar {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
 
-  <link
-    rel="stylesheet"
-    href="css/style.css"
-  >
+    .chat-btn {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      backdrop-filter: blur(5px);
+    }
 
-  <title>دجاج اليمامة</title>
+    .profile-icon {
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+    }
 
+    .logo-area {
+      text-align: center;
+      margin: 15px 0 10px 0;
+    }
+
+    .logo-svg {
+      width: 70px;
+      height: auto;
+      margin-bottom: 5px;
+    }
+
+    .brand-title {
+      font-size: 2.2rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+      line-height: 1.1;
+    }
+
+    .section-divider {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 15px 0 20px 0;
+    }
+
+    .section-divider::before, .section-divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .section-title {
+      padding: 0 15px;
+      font-size: 1.2rem;
+      color: #e0f0ff;
+    }
+
+    /* Grid Layout */
+    .products-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      width: 100%;
+      margin-bottom: 25px;
+    }
+
+    /* Product Card */
+    .card {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 16px;
+      padding: 12px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .image-wrapper {
+      position: relative;
+      width: 100px;
+      height: 75px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .wooden-plate {
+      position: absolute;
+      bottom: 0;
+      width: 90px;
+      height: 20px;
+      background: #8b5a2b;
+      border-radius: 50%;
+      border: 2px solid #5c3a17;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+    }
+
+    .item-icon {
+      font-size: 2.5rem;
+      position: relative;
+      z-index: 2;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+    }
+
+    .product-title {
+      font-size: 0.95rem;
+      font-weight: bold;
+      margin-bottom: 2px;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      color: #d0e8ff;
+      margin-bottom: 8px;
+    }
+
+    .price-label {
+      font-size: 0.7rem;
+      color: #e0e0e0;
+      margin-bottom: 4px;
+    }
+
+    .price-box {
+      background: #ffffff;
+      color: #1a4975;
+      width: 100%;
+      border-radius: 6px;
+      padding: 4px 0;
+      font-weight: bold;
+      font-size: 1.05rem;
+      text-align: center;
+      margin-bottom: 10px;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    .order-btn {
+      background: #1d5287;
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      width: 100%;
+      padding: 6px 0;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .order-btn:hover {
+      background: #153e68;
+    }
+
+    /* Footer Section */
+    .footer {
+      width: 100%;
+      background: #ffffff;
+      color: #1d5287;
+      border-radius: 25px 25px 0 0;
+      padding: 15px;
+      text-align: center;
+      margin-top: auto;
+    }
+
+    .footer-title {
+      font-size: 0.9rem;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .phone-number {
+      font-size: 1.2rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      color: #1d5287;
+    }
+  </style>
 </head>
-
-
 <body>
 
-
-  <!-- =================================
-       الشريط المتحرك
-       ================================= -->
-
-  <div class="ticker-wrap">
-
-    <div
-      class="ticker"
-      id="ticker-el"
-    >
-      🔥 أهلاً بكم في متجر دجاج اليمامة - دجاج طازج يومياً وتوصيل مباشر 🔥
-    </div>
-
-  </div>
-
-
-  <!-- =================================
-       رأس الصفحة
-       ================================= -->
-
-  <header>
-
-    <button
-      class="btn-top-chat"
-      type="button"
-      onclick="openChat()"
-    >
-      💬 تحدث مع المدير
-    </button>
-
-
-    <img
-      src="assets/icon-192.png"
-      alt="دجاج اليمامة"
-      class="store-logo"
-    >
-
-
-    <div class="brand-title">
-      دجاج اليمامة
-    </div>
-
-
-    <div class="brand-subtitle">
-      دجاج طازج يومياً
-    </div>
-
-  </header>
-
-
-  <!-- =================================
-       المنتجات
-       ================================= -->
-
-  <main>
-
-    <section
-      class="grid"
-      id="products-grid"
-    ></section>
-
-
-    <!-- =================================
-         أزرار الخدمات
-         ================================= -->
-
-    <div class="store-actions">
-
-      <button
-        class="store-action-button"
-        type="button"
-        onclick="openTracking()"
-      >
-        📦 تتبع الطلب
-      </button>
-
-
-      <button
-        class="store-action-button"
-        type="button"
-        onclick="openChat()"
-      >
-        💬 المحادثة مع الإدارة
-      </button>
-
-    </div>
-
-  </main>
-
-
-  <!-- =================================
-       نافذة المحادثة
-       ================================= -->
-
-  <div
-    class="chat-modal"
-    id="chat-modal"
-  >
-
-    <div class="chat-box">
-
-
-      <div class="chat-header">
-
-        <span>
-          💬 إدارة دجاج اليمامة
-        </span>
-
-
-        <button
-          type="button"
-          onclick="closeChat()"
-          style="
-            background:none;
-            border:none;
-            color:white;
-            font-size:20px;
-            cursor:pointer;
-          "
-        >
-          ✕
-        </button>
-
+  <div class="container">
+    
+    <!-- Top Navigation -->
+    <div class="top-bar">
+      <a href="#" class="chat-btn">
+        <i class="fa-regular fa-comments"></i>
+        تحدث مع المدير
+      </a>
+      <div class="profile-icon">
+        <i class="fa-solid fa-shopping-cart" style="color: white; font-size: 0.9rem;"></i>
       </div>
+    </div>
 
+    <!-- Brand Logo Area -->
+    <div class="logo-area">
+      <svg class="logo-svg" viewBox="0 0 100 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M50 5C30 5 10 25 10 35C25 35 35 25 50 15C65 25 75 35 90 35C90 25 70 5 50 5Z" fill="white" opacity="0.9"/>
+        <path d="M50 20C35 20 20 35 15 45C30 42 40 32 50 25C60 32 70 42 85 45C80 35 65 20 50 20Z" fill="white"/>
+      </svg>
+      <div class="brand-title">دجاج<br>اليمامه</div>
+    </div>
 
-      <div
-        class="chat-body"
-        id="chat-preview"
-      >
+    <!-- Section Title -->
+    <div class="section-divider">
+      <span class="section-title">منتجاتنا</span>
+    </div>
 
-        <div class="bubble admin">
-          أهلاً وسهلاً بكم في دجاج اليمامة.
-          يمكنكم إرسال طلبكم أو الاستفسار من الإدارة.
+    <!-- Products Grid -->
+    <div class="products-grid">
+
+      <!-- Item 1 -->
+      <div class="card">
+        <div class="image-wrapper">
+          <div class="wooden-plate"></div>
+          <span class="item-icon">🍗</span>
         </div>
-
+        <div class="product-title">قطع دجاج</div>
+        <div class="badge">طازج 100%</div>
+        <div class="price-label">سعر المنتج (د.ل)</div>
+        <div class="price-box">18.00</div>
+        <button class="order-btn">طلب</button>
       </div>
 
+      <!-- Item 2 -->
+      <div class="card">
+        <div class="image-wrapper">
+          <div class="wooden-plate"></div>
+          <span class="item-icon">🐔</span>
+        </div>
+        <div class="product-title">دجاج كامل</div>
+        <div class="badge">طازج 100%</div>
+        <div class="price-label">سعر المنتج (د.ل)</div>
+        <div class="price-box">25.00</div>
+        <button class="order-btn">طلب</button>
+      </div>
 
-      <button
-        class="action-btn"
-        type="button"
-        onclick="window.location.href='chat.html'"
-      >
-        فتح المحادثة
-      </button>
+      <!-- Item 3 -->
+      <div class="card">
+        <div class="image-wrapper">
+          <div class="wooden-plate"></div>
+          <span class="item-icon">🪽</span>
+        </div>
+        <div class="product-title">أجنحة دجاج</div>
+        <div class="badge">طازج 100%</div>
+        <div class="price-label">سعر المنتج (د.ل)</div>
+        <div class="price-box">16.00</div>
+        <button class="order-btn">طلب</button>
+      </div>
+
+      <!-- Item 4 -->
+      <div class="card">
+        <div class="image-wrapper">
+          <div class="wooden-plate"></div>
+          <span class="item-icon">🥩</span>
+        </div>
+        <div class="product-title">صدور دجاج</div>
+        <div class="badge">طازج 100%</div>
+        <div class="price-label">سعر المنتج (د.ل)</div>
+        <div class="price-box">24.00</div>
+        <button class="order-btn">طلب</button>
+      </div>
+
+      <!-- Item 5 -->
+      <div class="card">
+        <div class="image-wrapper">
+          <div class="wooden-plate"></div>
+          <span class="item-icon">🫀</span>
+        </div>
+        <div class="product-title">كبدة دجاج</div>
+        <div class="badge">طازج 100%</div>
+        <div class="price-label">سعر المنتج (د.ل)</div>
+        <div class="price-box">12.00</div>
+        <button class="order-btn">طلب</button>
+      </div>
+
+      <!-- Item 6 -->
+      <div class="card">
+        <div class="image-wrapper">
+          <div class="wooden-plate"></div>
+          <span class="item-icon">🍗</span>
+        </div>
+        <div class="product-title">أوراك دجاج</div>
+        <div class="badge">طازج 100%</div>
+        <div class="price-label">سعر المنتج (د.ل)</div>
+        <div class="price-box">15.00</div>
+        <button class="order-btn">طلب</button>
+      </div>
+
+      <!-- Item 7 -->
+      <div class="card">
+        <div class="image-wrapper">
+          <div class="wooden-plate"></div>
+          <span class="item-icon">🍢</span>
+        </div>
+        <div class="product-title">قوانص دجاج</div>
+        <div class="badge">طازج 100%</div>
+        <div class="price-label">سعر المنتج (د.ل)</div>
+        <div class="price-box">11.00</div>
+        <button class="order-btn">طلب</button>
+      </div>
+
+      <!-- Item 8 -->
+      <div class="card">
+        <div class="image-wrapper">
+          <div class="wooden-plate"></div>
+          <span class="item-icon">🥓</span>
+        </div>
+        <div class="product-title">أعناق دجاج</div>
+        <div class="badge">طازج 100%</div>
+        <div class="price-label">سعر المنتج (د.ل)</div>
+        <div class="price-box">10.00</div>
+        <button class="order-btn">طلب</button>
+      </div>
 
     </div>
 
+    <!-- Footer -->
+    <div class="footer">
+      <div class="footer-title">بإدارة معتز احمد</div>
+      <a href="tel:0981716388" class="phone-number">
+        <i class="fa-solid fa-phone"></i>
+        0981716388
+      </a>
+    </div>
+
   </div>
-
-
-  <!-- =================================
-       JavaScript
-       ================================= -->
-
-  <script src="js/products.js"></script>
-
-
-  <script>
-
-    "use strict";
-
-
-    /* =================================
-       الشريط المتحرك
-       ================================= */
-
-    function loadTicker() {
-
-      const saved =
-        localStorage.getItem(
-          "yamama_settings"
-        );
-
-
-      if (!saved) {
-        return;
-      }
-
-
-      try {
-
-        const settings =
-          JSON.parse(saved);
-
-
-        if (
-          settings.ticker &&
-          settings.ticker.trim()
-        ) {
-
-          document
-            .getElementById("ticker-el")
-            .textContent =
-              settings.ticker;
-
-        }
-
-      } catch {
-
-        console.log(
-          "تعذر تحميل الشريط"
-        );
-
-      }
-
-    }
-
-
-    /* =================================
-       فتح المحادثة
-       ================================= */
-
-    function openChat() {
-
-      const modal =
-        document.getElementById(
-          "chat-modal"
-        );
-
-
-      modal.style.display =
-        "flex";
-
-    }
-
-
-    /* =================================
-       إغلاق المحادثة
-       ================================= */
-
-    function closeChat() {
-
-      document
-        .getElementById(
-          "chat-modal"
-        )
-        .style.display =
-          "none";
-
-    }
-
-
-    /* =================================
-       تتبع الطلب
-       ================================= */
-
-    function openTracking() {
-
-      const order =
-        localStorage.getItem(
-          "yamama_last_order"
-        );
-
-
-      if (!order) {
-
-        alert(
-          "لا يوجد طلب محفوظ حالياً."
-        );
-
-        return;
-
-      }
-
-
-      window.location.href =
-        "tracking.html";
-
-    }
-
-
-    /* =================================
-       إغلاق النافذة عند الضغط خارجها
-       ================================= */
-
-    document
-      .getElementById("chat-modal")
-      .addEventListener(
-        "click",
-        function(event) {
-
-          if (
-            event.target === this
-          ) {
-
-            closeChat();
-
-          }
-
-        }
-      );
-
-
-    /* =================================
-       تشغيل الصفحة
-       ================================= */
-
-    document.addEventListener(
-      "DOMContentLoaded",
-      function() {
-
-        loadTicker();
-
-      }
-    );
-
-  </script>
-
 
 </body>
-
 </html>
