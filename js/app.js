@@ -1,503 +1,125 @@
-/* =========================================
-   دجاج اليمامة - app.js
-   ========================================= */
-
-const apiKey = "AQ.Ab8RN6KUuahNyqDAiCX6owjD5BpyyDBcbgsJk9YR0zOu_yRkxw";
-"use strict";
-
-/* -----------------------------------------
-   المنتجات الافتراضية
-   ----------------------------------------- */
-
-const defaultProducts = [
-  {
-    id: "p1",
-    name: "قطع دجاج",
-    price: "18000",
-    image: "",
-    active: true
-  },
-  {
-    id: "p2",
-    name: "دجاج كامل",
-    price: "25000",
-    image: "",
-    active: true
-  },
-  {
-    id: "p3",
-    name: "صدور دجاج",
-    price: "24000",
-    image: "",
-    active: true
-  },
-  {
-    id: "p4",
-    name: "أجنحة دجاج",
-    price: "16000",
-    image: "",
-    active: true
-  },
-  {
-    id: "p5",
-    name: "أوراك دجاج",
-    price: "15000",
-    image: "",
-    active: true
-  },
-  {
-    id: "p6",
-    name: "كبدة دجاج",
-    price: "12000",
-    image: "",
-    active: true
-  },
-  {
-    id: "p7",
-    name: "أعناق دجاج",
-    price: "10000",
-    image: "",
-    active: true
-  },
-  {
-    id: "p8",
-    name: "قوانص دجاج",
-    price: "11000",
-    image: "",
-    active: true
-  }
-];
-
-/* -----------------------------------------
-   إعدادات التطبيق
-   ----------------------------------------- */
-
-const defaultSettings = {
-  ticker:
-    "🔥 أهلاً بكم في متجر دجاج اليمامة - دجاج طازج يومياً وتوصيل مباشر 🔥",
-
-  driverName: "عامل التوصيل",
-
-  driverPhone: "",
-
-  camera1: "",
-
-  camera2: "",
-
-  broadcastDuration: 45
-};
-
-/* -----------------------------------------
-   قراءة المنتجات
-   ----------------------------------------- */
-
-function getProducts() {
-
-  const saved =
-    localStorage.getItem("yamama_products");
-
-  if (!saved) {
-
-    localStorage.setItem(
-      "yamama_products",
-      JSON.stringify(defaultProducts)
-    );
-
-    return defaultProducts;
-  }
-
-  try {
-
-    return JSON.parse(saved);
-
-  } catch (error) {
-
-    console.error(
-      "تعذر قراءة المنتجات",
-      error
-    );
-
-    return defaultProducts;
-  }
-}
-
-/* -----------------------------------------
-   حفظ المنتجات
-   ----------------------------------------- */
-
-function saveProducts(products) {
-
-  localStorage.setItem(
-    "yamama_products",
-    JSON.stringify(products)
-  );
-}
-
-/* -----------------------------------------
-   قراءة الإعدادات
-   ----------------------------------------- */
-
-function getSettings() {
-
-  const saved =
-    localStorage.getItem("yamama_settings");
-
-  if (!saved) {
-
-    localStorage.setItem(
-      "yamama_settings",
-      JSON.stringify(defaultSettings)
-    );
-
-    return {
-      ...defaultSettings
-    };
-  }
-
-  try {
-
-    return {
-      ...defaultSettings,
-      ...JSON.parse(saved)
-    };
-
-  } catch (error) {
-
-    return {
-      ...defaultSettings
-    };
-  }
-}
-
-/* -----------------------------------------
-   حفظ الإعدادات
-   ----------------------------------------- */
-
-function saveSettings(settings) {
-
-  localStorage.setItem(
-    "yamama_settings",
-    JSON.stringify(settings)
-  );
-}
-
-/* -----------------------------------------
-   الشريط المتحرك
-   ----------------------------------------- */
-
-function loadTicker() {
-
-  const ticker =
-    document.getElementById("ticker-el");
-
-  if (!ticker) return;
-
-  const settings =
-    getSettings();
-
-  ticker.textContent =
-    settings.ticker;
-}
-
-/* -----------------------------------------
-   إنشاء بطاقة المنتج
-   ----------------------------------------- */
-
-function createProductCard(product) {
-
-  const card =
-    document.createElement("div");
-
-  card.className =
-    "product-card";
-
-  let imageHTML = "";
-
-  if (product.image) {
-
-    imageHTML = `
-      <img
-        class="product-image"
-        src="${product.image}"
-        alt="${escapeHTML(product.name)}"
-      >
-    `;
-
-  } else {
-
-    imageHTML = `
-      <div class="product-placeholder">
-        🐔
-      </div>
-    `;
-  }
-
-  card.innerHTML = `
-
-    <div>
-
-      <div class="product-top">
-
-        <div class="product-info">
-
-          <div class="product-name">
-            ${escapeHTML(product.name)}
-          </div>
-
-          <div class="product-fresh">
-            طازج يومياً
-          </div>
-
-        </div>
-
-        <div class="product-image-box">
-          ${imageHTML}
-        </div>
-
-      </div>
-
-      <div class="price-title">
-        سعر المنتج
-      </div>
-
-      <div class="product-price">
-        ${formatPrice(product.price)} ل.س
-      </div>
-
-    </div>
-
-    <button
-      class="order-button"
-      type="button"
-      onclick="openOrderForm('${product.id}')"
-    >
-      طلب
-    </button>
-
-  `;
-
-  return card;
-}
-
-/* -----------------------------------------
-   عرض المنتجات
-   ----------------------------------------- */
-
-function renderProducts() {
-
-  const grid =
-    document.getElementById(
-      "products-grid"
-    );
-
-  if (!grid) return;
-
-  const products =
-    getProducts();
-
-  grid.innerHTML = "";
-
-  products
-    .filter(product => product.active !== false)
-    .forEach(product => {
-
-      grid.appendChild(
-        createProductCard(product)
-      );
-
-    });
-}
-
-/* -----------------------------------------
-   تنسيق السعر
-   ----------------------------------------- */
-
-function formatPrice(price) {
-
-  const number =
-    Number(
-      String(price)
-        .replace(/[^\d.]/g, "")
-    );
-
-  if (Number.isNaN(number)) {
-    return price;
-  }
-
-  return number.toLocaleString("ar-SA");
-}
-
-/* -----------------------------------------
-   حماية النصوص من HTML
-   ----------------------------------------- */
-
-function escapeHTML(value) {
-
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-/* -----------------------------------------
-   فتح نموذج الطلب
-   ----------------------------------------- */
-
-function openOrderForm(productId) {
-
-  const products =
-    getProducts();
-
-  const product =
-    products.find(
-      item => item.id === productId
-    );
-
-  if (!product) {
-
-    showToast(
-      "تعذر العثور على المنتج"
-    );
-
-    return;
-  }
-
-  localStorage.setItem(
-    "yamama_selected_product",
-    JSON.stringify(product)
-  );
-
-  if (
-    typeof window.openCustomerOrder ===
-    "function"
-  ) {
-
-    window.openCustomerOrder(product);
-
-  } else {
-
-    showToast(
-      "تم اختيار: " + product.name
-    );
-
-  }
-}
-
-/* -----------------------------------------
-   فتح المحادثة
-   ----------------------------------------- */
-
-function openChat() {
-
-  const modal =
-    document.getElementById(
-      "chat-modal"
-    );
-
-  if (!modal) {
-
-    showToast(
-      "المحادثة ستكون متاحة في المرحلة القادمة"
-    );
-
-    return;
-  }
-
-  modal.classList.add("active");
-}
-
-/* -----------------------------------------
-   إغلاق المحادثة
-   ----------------------------------------- */
-
-function closeChat() {
-
-  const modal =
-    document.getElementById(
-      "chat-modal"
-    );
-
-  if (!modal) return;
-
-  modal.classList.remove("active");
-}
-
-/* -----------------------------------------
-   رسالة مؤقتة
-   ----------------------------------------- */
-
-function showToast(message) {
-
-  let toast =
-    document.getElementById(
-      "yamama-toast"
-    );
-
+// ============================================
+// 1. إنشاء عنصر Toast (إشعار) إذا لم يكن موجودًا
+// ============================================
+function ensureToastElement() {
+  let toast = document.getElementById('toast');
   if (!toast) {
-
-    toast =
-      document.createElement("div");
-
-    toast.id =
-      "yamama-toast";
-
-    toast.className =
-      "toast";
-
+    toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.style.cssText = `
+      position: fixed;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1d5287;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      z-index: 9999;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    `;
     document.body.appendChild(toast);
   }
-
-  toast.textContent =
-    message;
-
-  toast.classList.add("show");
-
-  clearTimeout(
-    window.yamamaToastTimer
-  );
-
-  window.yamamaToastTimer =
-    setTimeout(() => {
-
-      toast.classList.remove("show");
-
-    }, 2500);
+  return toast;
 }
 
-/* -----------------------------------------
-   تهيئة التطبيق
-   ----------------------------------------- */
+// ============================================
+// 2. دالة إظهار Toast مع إخفاء تلقائي
+// ============================================
+function showToast(message) {
+  const toast = ensureToastElement();
+  toast.textContent = message;
+  toast.style.opacity = '1';
+  toast.style.visibility = 'visible';
 
+  // إلغاء أي مؤقت سابق
+  clearTimeout(window.yamamaToastTimer);
+
+  // إخفاء بعد 2.5 ثانية
+  window.yamamaToastTimer = setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.visibility = 'hidden';
+  }, 2500);
+}
+
+// ============================================
+// 3. دوال تحميل البيانات (اختيارية – لن نستخدمها هنا)
+// ============================================
+function loadTicker() {
+  // يمكن تنفيذ أي تهيئة هنا (مثل شريط أخبار)
+  console.log('Ticker loaded');
+}
+
+function renderProducts() {
+  // المنتجات موجودة في HTML ثابت، فلا حاجة لإعادة الرسم
+  console.log('Products rendered');
+}
+
+// ============================================
+// 4. معالجة النقر على الأزرار (تفويض الأحداث)
+// ============================================
+function handleButtonClick(event) {
+  const target = event.target.closest('button, a'); // نبحث عن أقرب زر أو رابط
+
+  if (!target) return;
+
+  // ✅ زر "طلب" الخاص بالمنتج
+  if (target.classList.contains('order-btn')) {
+    const card = target.closest('.card');
+    if (card) {
+      const productName = card.querySelector('.product-title')?.textContent || 'منتج';
+      const price = card.querySelector('.price-box')?.textContent || '';
+      showToast(`تمت إضافة "${productName}" (${price} د.ل) إلى السلة`);
+    }
+  }
+
+  // ✅ زر "تحدث مع المدير"
+  if (target.classList.contains('chat-btn')) {
+    showToast('جارٍ فتح المحادثة مع المدير...');
+    // يمكن هنا فتح رابط خارجي أو نافذة دردشة
+    // window.open('https://wa.me/218917163888', '_blank');
+  }
+
+  // ✅ أيقونة السلة (profile-icon)
+  if (target.closest('.profile-icon')) {
+    showToast('السلة فارغة حالياً');
+    // يمكن فتح صفحة السلة أو عرض محتوياتها
+  }
+
+  // ✅ رابط رقم الهاتف في الفوتر
+  if (target.classList.contains('phone-number')) {
+    // لا نعرض toast حتى لا نزعج المستخدم، فقط نسمح بالاتصال
+    console.log('اتصال بالرقم');
+  }
+}
+
+// ============================================
+// 5. تهيئة التطبيق
+// ============================================
 function initYamamaApp() {
-
+  // تحميل البيانات (حتى لو كانت فارغة)
   loadTicker();
-
   renderProducts();
 
-  if (
-    "serviceWorker" in navigator
-  ) {
+  // ربط الأحداث
+  document.addEventListener('click', handleButtonClick);
 
+  // تسجيل Service Worker (اختياري)
+  if ('serviceWorker' in navigator) {
     navigator.serviceWorker
-      .register("sw.js")
+      .register('sw.js')
       .catch(error => {
-
-        console.log(
-          "Service Worker:",
-          error
-        );
-
+        console.log('Service Worker:', error);
       });
   }
 }
 
-/* -----------------------------------------
-   تشغيل التطبيق
-   ----------------------------------------- */
-
-document.addEventListener(
-  "DOMContentLoaded",
-  initYamamaApp
-);
+// ============================================
+// 6. تشغيل التطبيق عند اكتمال تحميل الصفحة
+// ============================================
+document.addEventListener('DOMContentLoaded', initYamamaApp);
