@@ -66,7 +66,7 @@ function renderProducts() {
 function handleButtonClick(event) {
   const target = event.target.closest('button, a'); // نبحث عن أقرب زر أو رابط
 
-  if (!target) return;
+/  if (!target) return;
 
   // ✅ زر "طلب" الخاص بالمنتج
   if (target.classList.contains('order-btn')) {
