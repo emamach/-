@@ -6,20 +6,22 @@
   <title>دجاج اليمامة - منتجاتنا</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Tajawal', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     body {
-      background: linear-gradient(180deg, #4b8ccb 0%, #296096 100%);
+      background: linear-gradient(180deg, #5B9BD5 0%, #4A8BC7 30%, #3A7AB8 60%, #2E6AA8 100%);
       color: #ffffff;
       min-height: 100vh;
       display: flex;
       justify-content: center;
-      padding: 15px;
+      padding: 0;
     }
 
     .container {
@@ -28,6 +30,9 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      position: relative;
+      padding: 15px;
+      padding-bottom: 0;
     }
 
     /* Header Section */
@@ -36,50 +41,74 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 10px;
+      margin-bottom: 5px;
+      padding: 0 5px;
     }
 
     .chat-btn {
       background: rgba(255, 255, 255, 0.15);
-      border: 1px solid rgba(255, 255, 255, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.5);
       color: #fff;
-      padding: 8px 16px;
-      border-radius: 20px;
+      padding: 8px 18px;
+      border-radius: 25px;
       font-size: 0.85rem;
+      font-weight: 500;
       text-decoration: none;
       display: flex;
       align-items: center;
-      gap: 6px;
-      backdrop-filter: blur(5px);
+      gap: 8px;
+      backdrop-filter: blur(8px);
+      transition: all 0.3s ease;
+    }
+
+    .chat-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
     }
 
     .profile-icon {
-      width: 40px;
-      height: 40px;
+      width: 44px;
+      height: 44px;
       background: rgba(255, 255, 255, 0.2);
       border-radius: 50%;
       display: flex;
       justify-content: center;
       align-items: center;
-      border: 1px solid rgba(255, 255, 255, 0.4);
+      border: 1.5px solid rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .profile-icon:hover {
+      background: rgba(255, 255, 255, 0.3);
     }
 
     .logo-area {
       text-align: center;
-      margin: 15px 0 10px 0;
+      margin: 5px 0 8px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .logo-svg {
-      width: 70px;
-      height: auto;
-      margin-bottom: 5px;
+      width: 80px;
+      height: 55px;
+      margin-bottom: 2px;
     }
 
     .brand-title {
-      font-size: 2.2rem;
-      font-weight: bold;
-      letter-spacing: 1px;
-      line-height: 1.1;
+      font-size: 2.4rem;
+      font-weight: 800;
+      letter-spacing: 0;
+      line-height: 1.15;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    }
+
+    .brand-subtitle {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.9);
+      margin-top: 2px;
     }
 
     .section-divider {
@@ -87,118 +116,160 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 15px 0 20px 0;
+      margin: 12px 0 18px 0;
     }
 
     .section-divider::before, .section-divider::after {
       content: "";
       flex: 1;
       height: 1px;
-      background: rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.35);
     }
 
     .section-title {
-      padding: 0 15px;
-      font-size: 1.2rem;
-      color: #e0f0ff;
+      padding: 0 18px;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 1px;
     }
 
     /* Grid Layout */
     .products-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px;
+      gap: 14px;
       width: 100%;
-      margin-bottom: 25px;
+      margin-bottom: 20px;
     }
 
     /* Product Card */
     .card {
-      background: rgba(255, 255, 255, 0.12);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      border-radius: 16px;
-      padding: 12px 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1.5px solid rgba(255, 255, 255, 0.35);
+      border-radius: 18px;
+      padding: 14px 10px 12px 10px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12), inset 0 1px 1px rgba(255,255,255,0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18), inset 0 1px 1px rgba(255,255,255,0.15);
     }
 
     .image-wrapper {
       position: relative;
-      width: 100px;
-      height: 75px;
-      margin-bottom: 8px;
+      width: 110px;
+      height: 85px;
+      margin-bottom: 6px;
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: flex-end;
     }
 
     .wooden-plate {
       position: absolute;
-      bottom: 0;
-      width: 90px;
-      height: 20px;
-      background: #8b5a2b;
+      bottom: 2px;
+      width: 95px;
+      height: 22px;
+      background: linear-gradient(180deg, #A67B5B 0%, #8B5A2B 50%, #6B4226 100%);
       border-radius: 50%;
-      border: 2px solid #5c3a17;
-      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+      border: 2px solid #5C3A17;
+      box-shadow: 
+        inset 0 2px 4px rgba(255, 255, 255, 0.2),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.3),
+        0 4px 8px rgba(0, 0, 0, 0.3);
     }
 
-    .item-icon {
-      font-size: 2.5rem;
+    .wooden-plate::before {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 8px;
+      right: 8px;
+      height: 4px;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%);
+      border-radius: 50%;
+    }
+
+    .product-img {
+      width: 90px;
+      height: 75px;
+      object-fit: cover;
+      border-radius: 8px;
       position: relative;
       z-index: 2;
-      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.25));
+      margin-bottom: 5px;
     }
 
     .product-title {
       font-size: 0.95rem;
-      font-weight: bold;
-      margin-bottom: 2px;
+      font-weight: 700;
+      margin-bottom: 3px;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.2);
     }
 
     .badge {
-      font-size: 0.75rem;
-      color: #d0e8ff;
-      margin-bottom: 8px;
+      font-size: 0.72rem;
+      color: #D6EAF8;
+      margin-bottom: 10px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
     }
 
     .price-label {
-      font-size: 0.7rem;
-      color: #e0e0e0;
-      margin-bottom: 4px;
+      font-size: 0.68rem;
+      color: rgba(255, 255, 255, 0.85);
+      margin-bottom: 5px;
+      font-weight: 500;
     }
 
     .price-box {
       background: #ffffff;
       color: #1a4975;
       width: 100%;
-      border-radius: 6px;
-      padding: 4px 0;
-      font-weight: bold;
-      font-size: 1.05rem;
+      max-width: 130px;
+      border-radius: 8px;
+      padding: 5px 0;
+      font-weight: 800;
+      font-size: 1.1rem;
       text-align: center;
       margin-bottom: 10px;
-      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+      box-shadow: 
+        inset 0 2px 4px rgba(0, 0, 0, 0.08),
+        0 2px 4px rgba(0,0,0,0.1);
+      letter-spacing: 0.5px;
     }
 
     .order-btn {
-      background: #1d5287;
+      background: linear-gradient(180deg, #1d5287 0%, #164070 100%);
       color: #ffffff;
       border: 1px solid rgba(255, 255, 255, 0.4);
       width: 100%;
-      padding: 6px 0;
-      border-radius: 20px;
+      max-width: 130px;
+      padding: 7px 0;
+      border-radius: 22px;
       font-size: 0.9rem;
-      font-weight: bold;
+      font-weight: 700;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: all 0.3s ease;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
     }
 
     .order-btn:hover {
-      background: #153e68;
+      background: linear-gradient(180deg, #164070 0%, #0f3055 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.25);
+    }
+
+    .order-btn:active {
+      transform: translateY(0);
     }
 
     /* Footer Section */
@@ -206,34 +277,73 @@
       width: 100%;
       background: #ffffff;
       color: #1d5287;
-      border-radius: 25px 25px 0 0;
-      padding: 15px;
+      border-radius: 30px 30px 0 0;
+      padding: 18px 15px 15px 15px;
       text-align: center;
       margin-top: auto;
+      box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
     }
 
     .footer-title {
-      font-size: 0.9rem;
-      font-weight: bold;
-      margin-bottom: 5px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #1d5287;
     }
 
     .phone-number {
-      font-size: 1.2rem;
-      font-weight: bold;
+      font-size: 1.25rem;
+      font-weight: 800;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 10px;
       text-decoration: none;
       color: #1d5287;
+      transition: color 0.3s ease;
+    }
+
+    .phone-number:hover {
+      color: #0f3055;
+    }
+
+    .phone-number i {
+      font-size: 1.1rem;
+    }
+
+    /* Decorative dots near profile */
+    .dots-decoration {
+      position: absolute;
+      top: 55px;
+      left: 20px;
+      display: flex;
+      gap: 4px;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      background: rgba(255,255,255,0.6);
+      border-radius: 50%;
+    }
+
+    .dot:nth-child(2) {
+      width: 4px;
+      height: 4px;
+      opacity: 0.5;
+    }
+
+    .dot:nth-child(3) {
+      width: 3px;
+      height: 3px;
+      opacity: 0.3;
     }
   </style>
 </head>
 <body>
 
   <div class="container">
-    
+
     <!-- Top Navigation -->
     <div class="top-bar">
       <a href="#" class="chat-btn">
@@ -241,15 +351,31 @@
         تحدث مع المدير
       </a>
       <div class="profile-icon">
-        <i class="fa-solid fa-shopping-cart" style="color: white; font-size: 0.9rem;"></i>
+        <i class="fa-solid fa-shopping-cart" style="color: white; font-size: 1rem;"></i>
       </div>
+    </div>
+
+    <div class="dots-decoration">
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
     </div>
 
     <!-- Brand Logo Area -->
     <div class="logo-area">
-      <svg class="logo-svg" viewBox="0 0 100 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M50 5C30 5 10 25 10 35C25 35 35 25 50 15C65 25 75 35 90 35C90 25 70 5 50 5Z" fill="white" opacity="0.9"/>
-        <path d="M50 20C35 20 20 35 15 45C30 42 40 32 50 25C60 32 70 42 85 45C80 35 65 20 50 20Z" fill="white"/>
+      <svg class="logo-svg" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Bird body -->
+        <path d="M60 15C40 15 25 30 20 40C20 40 35 38 45 32C50 29 55 25 60 22C65 25 70 29 75 32C85 38 100 40 100 40C95 30 80 15 60 15Z" fill="white" opacity="0.95"/>
+        <!-- Wing top -->
+        <path d="M60 25C48 25 35 35 28 42C28 42 40 40 48 36C52 34 56 30 60 28C64 30 68 34 72 36C80 40 92 42 92 42C85 35 72 25 60 25Z" fill="white" opacity="0.85"/>
+        <!-- Wing middle -->
+        <path d="M60 35C50 35 40 42 35 48C35 48 45 46 52 43C55 41 57 39 60 37C63 39 65 41 68 43C75 46 85 48 85 48C80 42 70 35 60 35Z" fill="white" opacity="0.75"/>
+        <!-- Wing bottom -->
+        <path d="M60 45C52 45 45 50 40 55C40 55 48 53 54 51C56 50 58 48 60 47C62 48 64 50 66 51C72 53 80 55 80 55C75 50 68 45 60 45Z" fill="white" opacity="0.65"/>
+        <!-- Head -->
+        <ellipse cx="60" cy="18" rx="6" ry="5" fill="white" opacity="0.9"/>
+        <!-- Beak -->
+        <path d="M66 16L72 18L66 20Z" fill="white" opacity="0.8"/>
       </svg>
       <div class="brand-title">دجاج<br>اليمامه</div>
     </div>
@@ -262,24 +388,11 @@
     <!-- Products Grid -->
     <div class="products-grid">
 
-      <!-- Item 1 -->
+      <!-- Item 1: دجاج كامل -->
       <div class="card">
         <div class="image-wrapper">
           <div class="wooden-plate"></div>
-          <span class="item-icon">🍗</span>
-        </div>
-        <div class="product-title">قطع دجاج</div>
-        <div class="badge">طازج 100%</div>
-        <div class="price-label">سعر المنتج (د.ل)</div>
-        <div class="price-box">18.00</div>
-        <button class="order-btn">طلب</button>
-      </div>
-
-      <!-- Item 2 -->
-      <div class="card">
-        <div class="image-wrapper">
-          <div class="wooden-plate"></div>
-          <span class="item-icon">🐔</span>
+          <img src="https://kimi-web-img.kimi.ai/img/c8.alamy.com/6aa849cb70f891bbeadcbf72763c238958923703.jpg" class="product-img" alt="دجاج كامل">
         </div>
         <div class="product-title">دجاج كامل</div>
         <div class="badge">طازج 100%</div>
@@ -288,24 +401,24 @@
         <button class="order-btn">طلب</button>
       </div>
 
-      <!-- Item 3 -->
+      <!-- Item 2: قطع دجاج -->
       <div class="card">
         <div class="image-wrapper">
           <div class="wooden-plate"></div>
-          <span class="item-icon">🪽</span>
+          <img src="https://kimi-web-img.kimi.ai/img/static.vecteezy.com/7ca47ffc2bd97e9acbab069f199f8e93cc12607c.jpg" class="product-img" alt="قطع دجاج">
         </div>
-        <div class="product-title">أجنحة دجاج</div>
+        <div class="product-title">قطع دجاج</div>
         <div class="badge">طازج 100%</div>
         <div class="price-label">سعر المنتج (د.ل)</div>
-        <div class="price-box">16.00</div>
+        <div class="price-box">18.00</div>
         <button class="order-btn">طلب</button>
       </div>
 
-      <!-- Item 4 -->
+      <!-- Item 3: صدور دجاج -->
       <div class="card">
         <div class="image-wrapper">
           <div class="wooden-plate"></div>
-          <span class="item-icon">🥩</span>
+          <img src="https://kimi-web-img.kimi.ai/img/img.magnific.com/024b6148b62dc4a1d85654da6b6805c2fdee21b1.jpg" class="product-img" alt="صدور دجاج">
         </div>
         <div class="product-title">صدور دجاج</div>
         <div class="badge">طازج 100%</div>
@@ -314,24 +427,24 @@
         <button class="order-btn">طلب</button>
       </div>
 
-      <!-- Item 5 -->
+      <!-- Item 4: أجنحة دجاج -->
       <div class="card">
         <div class="image-wrapper">
           <div class="wooden-plate"></div>
-          <span class="item-icon">🫀</span>
+          <img src="https://kimi-web-img.kimi.ai/img/static.vecteezy.com/e2c73704e51fc4650566e1a571a87fe2ca16a484.jpg" class="product-img" alt="أجنحة دجاج">
         </div>
-        <div class="product-title">كبدة دجاج</div>
+        <div class="product-title">أجنحة دجاج</div>
         <div class="badge">طازج 100%</div>
         <div class="price-label">سعر المنتج (د.ل)</div>
-        <div class="price-box">12.00</div>
+        <div class="price-box">16.00</div>
         <button class="order-btn">طلب</button>
       </div>
 
-      <!-- Item 6 -->
+      <!-- Item 5: أوراك دجاج -->
       <div class="card">
         <div class="image-wrapper">
           <div class="wooden-plate"></div>
-          <span class="item-icon">🍗</span>
+          <img src="https://kimi-web-img.kimi.ai/img/static.vecteezy.com/e6629db8551ef44aa4cde6031c26bacd573650f5.JPG" class="product-img" alt="أوراك دجاج">
         </div>
         <div class="product-title">أوراك دجاج</div>
         <div class="badge">طازج 100%</div>
@@ -340,29 +453,42 @@
         <button class="order-btn">طلب</button>
       </div>
 
-      <!-- Item 7 -->
+      <!-- Item 6: كبدة دجاج -->
       <div class="card">
         <div class="image-wrapper">
           <div class="wooden-plate"></div>
-          <span class="item-icon">🍢</span>
+          <img src="https://kimi-web-img.kimi.ai/img/media02.stockfood.com/cc406167ec693c1be2f071f7ff70657bb8991d86.jpg" class="product-img" alt="كبدة دجاج">
         </div>
-        <div class="product-title">قوانص دجاج</div>
+        <div class="product-title">كبدة دجاج</div>
         <div class="badge">طازج 100%</div>
         <div class="price-label">سعر المنتج (د.ل)</div>
-        <div class="price-box">11.00</div>
+        <div class="price-box">12.00</div>
         <button class="order-btn">طلب</button>
       </div>
 
-      <!-- Item 8 -->
+      <!-- Item 7: أعناق دجاج -->
       <div class="card">
         <div class="image-wrapper">
           <div class="wooden-plate"></div>
-          <span class="item-icon">🥓</span>
+          <img src="https://kimi-web-img.kimi.ai/img/as2.ftcdn.net/b03a039d12ce028a2dda3d409bd9ba16f6a1fda1.jpg" class="product-img" alt="أعناق دجاج">
         </div>
         <div class="product-title">أعناق دجاج</div>
         <div class="badge">طازج 100%</div>
         <div class="price-label">سعر المنتج (د.ل)</div>
         <div class="price-box">10.00</div>
+        <button class="order-btn">طلب</button>
+      </div>
+
+      <!-- Item 8: قوانص دجاج -->
+      <div class="card">
+        <div class="image-wrapper">
+          <div class="wooden-plate"></div>
+          <img src="https://kimi-web-img.kimi.ai/img/c8.alamy.com/c82e7d8f10c343c12bede7c7a16e46903921291f.jpg" class="product-img" alt="قوانص دجاج">
+        </div>
+        <div class="product-title">قوانص دجاج</div>
+        <div class="badge">طازج 100%</div>
+        <div class="price-label">سعر المنتج (د.ل)</div>
+        <div class="price-box">11.00</div>
         <button class="order-btn">طلب</button>
       </div>
 
@@ -380,4 +506,4 @@
   </div>
 
 </body>
-</html>
+            </html>
