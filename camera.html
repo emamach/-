@@ -1,406 +1,57 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-
 <head>
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <meta
-    name="theme-color"
-    content="#000000"
-  >
-
-  <link
-    rel="icon"
-    href="assets/icon-192.png"
-  >
-
-  <link
-    rel="stylesheet"
-    href="css/style.css"
-  >
-
-  <title>مشاهدة الطلب - دجاج اليمامة</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1769aa">
+  <link rel="icon" href="assets/icon-192.png">
+  <link rel="stylesheet" href="css/style.css">
+  <title>البث المباشر - دجاج اليمامة</title>
+  <style>
+    .camera-container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .camera-header {
+      text-align: center;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #1d5287 0%, #2a7ab8 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    .camera-box {
+      background: #000;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      min-height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #999;
+    }
+    .camera-placeholder {
+      text-align: center;
+      font-size: 3rem;
+    }
+  </style>
 </head>
-
-<body class="camera-page">
-
-  <main class="camera-container">
-
+<body>
+<main>
+  <div class="camera-container">
     <div class="camera-header">
-
-      <div class="camera-title">
-        📹 مشاهدة تجهيز الطلب
-      </div>
-
-      <div
-        id="camera-timer"
-        class="camera-timer"
-      >
-        الوقت المتبقي: 00:00
-      </div>
-
+      <h1>📹 البث المباشر</h1>
+      <p>شاهد متجرنا مباشرة</p>
     </div>
-
-
-    <div class="camera-grid">
-
-      <!-- الكاميرا الأولى -->
-
-      <div class="camera-card">
-
-        <div class="camera-label">
-          الكاميرا الأولى
-        </div>
-
-        <div class="camera-frame">
-
-          <iframe
-            id="camera-1"
-            src="about:blank"
-            allow="autoplay"
-            title="الكاميرا الأولى"
-          ></iframe>
-
-          <div
-            id="camera-1-message"
-            class="camera-message"
-          >
-            في انتظار تشغيل الكاميرا
-          </div>
-
-        </div>
-
+    <div class="camera-box">
+      <div class="camera-placeholder">
+        <div>📹</div>
+        <p>لم يتم إعداد البث المباشر بعد</p>
       </div>
-
-
-      <!-- الكاميرا الثانية -->
-
-      <div class="camera-card">
-
-        <div class="camera-label">
-          الكاميرا الثانية
-        </div>
-
-        <div class="camera-frame">
-
-          <iframe
-            id="camera-2"
-            src="about:blank"
-            allow="autoplay"
-            title="الكاميرا الثانية"
-          ></iframe>
-
-          <div
-            id="camera-2-message"
-            class="camera-message"
-          >
-            في انتظار تشغيل الكاميرا
-          </div>
-
-        </div>
-
-      </div>
-
     </div>
-
-
-    <div class="camera-notice">
-
-      🔒 البث مخصص لمعاينة تجهيز طلبك فقط،
-      وسيتم إيقافه تلقائياً عند انتهاء الوقت.
-
-    </div>
-
-
-    <button
-      class="camera-close-button"
-      type="button"
-      onclick="closeCameraPage()"
-    >
-      إغلاق البث
-    </button>
-
-
-    <button
-      class="camera-back-button"
-      type="button"
-      onclick="window.location.href='tracking.html'"
-    >
-      العودة إلى تتبع الطلب
-    </button>
-
-  </main>
-
-
-<script>
-
-"use strict";
-
-
-/* =========================================
-   المتغيرات
-   ========================================= */
-
-let remainingSeconds = 0;
-
-let timer = null;
-
-
-/* =========================================
-   قراءة إعدادات المدير
-   ========================================= */
-
-function getCameraSettings() {
-
-  const saved =
-    localStorage.getItem(
-      "yamama_settings"
-    );
-
-
-  if (!saved) {
-
-    return {
-
-      camera1: "",
-
-      camera2: "",
-
-      broadcastDuration: 45
-
-    };
-
-  }
-
-
-  try {
-
-    return JSON.parse(saved);
-
-  } catch {
-
-    return {
-
-      camera1: "",
-
-      camera2: "",
-
-      broadcastDuration: 45
-
-    };
-
-  }
-
-}
-
-
-/* =========================================
-   تشغيل الكاميرات
-   ========================================= */
-
-function startCameras() {
-
-  const settings =
-    getCameraSettings();
-
-
-  const camera1 =
-    document.getElementById(
-      "camera-1"
-    );
-
-
-  const camera2 =
-    document.getElementById(
-      "camera-2"
-    );
-
-
-  const message1 =
-    document.getElementById(
-      "camera-1-message"
-    );
-
-
-  const message2 =
-    document.getElementById(
-      "camera-2-message"
-    );
-
-
-  /*
-    روابط الكاميرات ستدخل لاحقاً
-    من لوحة المدير.
-  */
-
-
-  if (settings.camera1) {
-
-    camera1.src =
-      settings.camera1;
-
-    message1.style.display =
-      "none";
-
-  }
-
-
-  if (settings.camera2) {
-
-    camera2.src =
-      settings.camera2;
-
-    message2.style.display =
-      "none";
-
-  }
-
-
-  remainingSeconds =
-    Number(
-      settings.broadcastDuration
-    ) || 45;
-
-
-  updateTimer();
-
-
-  timer =
-    setInterval(
-      function() {
-
-        remainingSeconds--;
-
-        updateTimer();
-
-
-        if (
-          remainingSeconds <= 0
-        ) {
-
-          stopBroadcast();
-
-        }
-
-      },
-      1000
-    );
-
-}
-
-
-/* =========================================
-   عرض العداد
-   ========================================= */
-
-function updateTimer() {
-
-  const timerElement =
-    document.getElementById(
-      "camera-timer"
-    );
-
-
-  const minutes =
-    Math.floor(
-      remainingSeconds / 60
-    );
-
-
-  const seconds =
-    remainingSeconds % 60;
-
-
-  timerElement.textContent =
-
-    "الوقت المتبقي: " +
-
-    String(minutes)
-      .padStart(2, "0") +
-
-    ":" +
-
-    String(seconds)
-      .padStart(2, "0");
-
-}
-
-
-/* =========================================
-   إيقاف البث
-   ========================================= */
-
-function stopBroadcast() {
-
-  clearInterval(timer);
-
-
-  const camera1 =
-    document.getElementById(
-      "camera-1"
-    );
-
-
-  const camera2 =
-    document.getElementById(
-      "camera-2"
-    );
-
-
-  camera1.src =
-    "about:blank";
-
-
-  camera2.src =
-    "about:blank";
-
-
-  document.getElementById(
-    "camera-timer"
-  ).textContent =
-    "انتهى وقت البث";
-
-
-  setTimeout(
-    function() {
-
-      window.location.href =
-        "tracking.html";
-
-    },
-    1500
-  );
-
-}
-
-
-/* =========================================
-   إغلاق الصفحة
-   ========================================= */
-
-function closeCameraPage() {
-
-  clearInterval(timer);
-
-  window.location.href =
-    "tracking.html";
-
-}
-
-
-/* =========================================
-   التشغيل
-   ========================================= */
-
-startCameras();
-
-</script>
-
+    <button class="back-button" onclick="window.location.href='index.html'" style="width: 100%; padding: 12px; background: #1d5287; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 700;">العودة للمتجر</button>
+  </div>
+</main>
 </body>
-
 </html>

@@ -48,27 +48,25 @@ function showToast(message) {
 }
 
 // ============================================
-// 3. دوال تحميل البيانات (اختيارية – لن نستخدمها هنا)
+// 3. دوال تحميل البيانات
 // ============================================
 function loadTicker() {
-  // يمكن تنفيذ أي تهيئة هنا (مثل شريط أخبار)
   console.log('Ticker loaded');
 }
 
 function renderProducts() {
-  // المنتجات موجودة في HTML ثابت، فلا حاجة لإعادة الرسم
   console.log('Products rendered');
 }
 
 // ============================================
-// 4. معالجة النقر على الأزرار (تفويض الأحداث)
+// 4. معالجة النقر على الأزرار
 // ============================================
 function handleButtonClick(event) {
-  const target = event.target.closest('button, a'); // نبحث عن أقرب زر أو رابط
+  const target = event.target.closest('button, a');
 
-/  if (!target) return;
+  if (!target) return;
 
-  // ✅ زر "طلب" الخاص بالمنتج
+  // زر "طلب" الخاص بالمنتج
   if (target.classList.contains('order-btn')) {
     const card = target.closest('.card');
     if (card) {
@@ -77,39 +75,16 @@ function handleButtonClick(event) {
       showToast(`تمت إضافة "${productName}" (${price} د.ل) إلى السلة`);
     }
   }
-
-  // ✅ زر "تحدث مع المدير"
-  if (target.classList.contains('chat-btn')) {
-    showToast('جارٍ فتح المحادثة مع المدير...');
-    // يمكن هنا فتح رابط خارجي أو نافذة دردشة
-    // window.open('https://wa.me/218917163888', '_blank');
-  }
-
-  // ✅ أيقونة السلة (profile-icon)
-  if (target.closest('.profile-icon')) {
-    showToast('السلة فارغة حالياً');
-    // يمكن فتح صفحة السلة أو عرض محتوياتها
-  }
-
-  // ✅ رابط رقم الهاتف في الفوتر
-  if (target.classList.contains('phone-number')) {
-    // لا نعرض toast حتى لا نزعج المستخدم، فقط نسمح بالاتصال
-    console.log('اتصال بالرقم');
-  }
 }
 
 // ============================================
 // 5. تهيئة التطبيق
 // ============================================
 function initYamamaApp() {
-  // تحميل البيانات (حتى لو كانت فارغة)
   loadTicker();
   renderProducts();
-
-  // ربط الأحداث
   document.addEventListener('click', handleButtonClick);
 
-  // تسجيل Service Worker (اختياري)
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker
       .register('sw.js')
@@ -120,6 +95,6 @@ function initYamamaApp() {
 }
 
 // ============================================
-// 6. تشغيل التطبيق عند اكتمال تحميل الصفحة
+// 6. تشغيل التطبيق
 // ============================================
 document.addEventListener('DOMContentLoaded', initYamamaApp);
