@@ -11,6 +11,7 @@
     h1{margin:6px 0;font-size:28px}
     .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     .card{background:rgba(255,255,255,0.08);border-radius:14px;padding:12px;display:flex;flex-direction:column;align-items:center;border:1px solid rgba(255,255,255,0.12)}
+    .product-img{width:90px;height:75px;object-fit:cover;border-radius:8px;margin-bottom:8px}
     .price{background:#fff;color:var(--main);padding:6px 10px;border-radius:8px;font-weight:700;margin:8px 0}
     .order-btn{background:linear-gradient(180deg,var(--main),#164070);color:#fff;border:none;padding:8px 12px;border-radius:12px;font-weight:700;cursor:pointer}
     .order-btn:active{transform:translateY(1px)}
@@ -28,6 +29,7 @@
     .message{padding:8px;border-radius:8px;margin-bottom:8px}
     .message.customer{background:#e6f2ff;text-align:right}
     .message.manager{background:#f2f2f2;text-align:left}
+    .system-note{background:#f0f8ff;padding:8px;border-radius:8px;color:#0b3b5a;margin-bottom:8px}
     @media (max-width:420px){h1{font-size:22px}.grid{grid-template-columns:1fr 1fr}}
   </style>
 </head>
@@ -71,6 +73,7 @@
 
       <div id="after" class="chat" style="display:none">
         <strong>محادثة مع الإدارة</strong>
+        <div id="system-note" class="system-note" style="display:none"></div>
         <div id="messages"></div>
         <textarea id="msg-input" placeholder="اكتب رسالة..." style="margin-top:8px"></textarea>
         <button id="send-msg" class="order-btn" style="margin-top:8px">إرسال</button>
@@ -84,14 +87,14 @@
     (function(){
       'use strict';
       const DEFAULT_PRODUCTS=[
-        {id:'p1',name:'قطع دجاج',price:'18000'},
-        {id:'p2',name:'دجاج كامل',price:'25000'},
-        {id:'p3',name:'صدور دجاج',price:'24000'},
-        {id:'p4',name:'أجنحة دجاج',price:'16000'},
-        {id:'p5',name:'أوراك دجاج',price:'15000'},
-        {id:'p6',name:'كبدة دجاج',price:'12000'},
-        {id:'p7',name:'أعناق دجاج',price:'10000'},
-        {id:'p8',name:'قوانص دجاج',price:'11000'}
+        {id:'p1',name:'قطع دجاج',price:'18000',image:'https://kimi-web-img.kimi.ai/img/static.vecteezy.com/7ca47ffc2bd97e9acbab069f199f8e93cc12607c.jpg'},
+        {id:'p2',name:'دجاج كامل',price:'25000',image:'https://kimi-web-img.kimi.ai/img/c8.alamy.com/6aa849cb70f891bbeadcbf72763c238958923703.jpg'},
+        {id:'p3',name:'صدور دجاج',price:'24000',image:'https://kimi-web-img.kimi.ai/img/img.magnific.com/024b6148b62dc4a1d85654da6b6805c2fdee21b1.jpg'},
+        {id:'p4',name:'أجنحة دجاج',price:'16000',image:'https://kimi-web-img.kimi.ai/img/static.vecteezy.com/e2c73704e51fc4650566e1a571a87fe2ca16a484.jpg'},
+        {id:'p5',name:'أوراك دجاج',price:'15000',image:'https://kimi-web-img.kimi.ai/img/static.vecteezy.com/e6629db8551ef44aa4cde6031c26bacd573650f5.JPG'},
+        {id:'p6',name:'كبدة دجاج',price:'12000',image:'https://kimi-web-img.kimi.ai/img/media02.stockfood.com/cc406167ec693c1be2f071f7ff70657bb8991d86.jpg'},
+        {id:'p7',name:'أعناق دجاج',price:'10000',image:'https://kimi-web-img.kimi.ai/img/as2.ftcdn.net/b03a039d12ce028a2dda3d409bd9ba16f6a1fda1.jpg'},
+        {id:'p8',name:'قوانص دجاج',price:'11000',image:'https://kimi-web-img.kimi.ai/img/c8.alamy.com/c82e7d8f10c343c12bede7c7a16e46903921291f.jpg'}
       ];
 
       const productsEl=document.getElementById('products');
@@ -105,13 +108,14 @@
       const afterPanel=document.getElementById('after');
       const messagesEl=document.getElementById('messages');
       const sendMsg=document.getElementById('send-msg');
+      const systemNote=document.getElementById('system-note');
 
       let currentOrder=null; let lat=null; let lon=null; let sending=false;
 
       function showToast(text,timeout=2000){toastEl.textContent=text;toastEl.style.opacity='1';clearTimeout(toastEl._t);toastEl._t=setTimeout(()=>{toastEl.style.opacity='0'},timeout)}
 
       function renderProducts(){productsEl.innerHTML='';DEFAULT_PRODUCTS.forEach(p=>{
-        const d=document.createElement('div');d.className='card';d.innerHTML=`<div style="text-align:center"><h3 style="margin:6px 0;color:#fff">${p.name}</h3><div style="opacity:.9">طازج يومياً</div></div><div class="price">${p.price} ل.س</div><button class="order-btn" data-id="${p.id}">طلب</button>`;productsEl.appendChild(d);
+        const d=document.createElement('div');d.className='card';d.innerHTML=`<img class="product-img" src="${p.image}" alt="${p.name}"><div style="text-align:center"><h3 style="margin:6px 0;color:#fff">${p.name}</h3><div style="opacity:.9">طازج يومياً</div></div><div class="price">${p.price} ل.س</div><button class="order-btn" data-id="${p.id}">طلب</button>`;productsEl.appendChild(d);
       });
       // attach listeners
       productsEl.querySelectorAll('[data-id]').forEach(btn=>btn.addEventListener('click',e=>{
@@ -123,7 +127,7 @@
         currentOrder={id:'YM-'+Date.now(),productId:p.id,productName:p.name,price:p.price,quantity:1,status:'تم الاستلام',createdAt:new Date().toISOString()};
         selected.innerHTML=`<div style="font-weight:700;color:var(--main)">${p.name}</div><div style="margin-top:6px">السعر: ${p.price} ل.س</div>`;
         // reset form
-        document.getElementById('name').value='';document.getElementById('phone').value='';document.getElementById('address').value='';document.getElementById('agree').checked=false;lat=null;lon=null;locStatus.textContent='لم يتم تحديد الموقع';afterPanel.style.display='none';messagesEl.innerHTML='';overlay.style.display='flex';
+        document.getElementById('name').value='';document.getElementById('phone').value='';document.getElementById('address').value='';document.getElementById('agree').checked=false;lat=null;lon=null;locStatus.textContent='لم يتم تحديد الموقع';systemNote.style.display='none';messagesEl.innerHTML='';afterPanel.style.display='none';overlay.style.display='flex';
       }
 
       function closeOverlay(){overlay.style.display='none'}
@@ -132,8 +136,8 @@
 
       locBtn.addEventListener('click',()=>{
         if(!navigator.geolocation){locStatus.textContent='جهازك لا يدعم تحديد الموقع';return}
-        locBtn.disabled=true;locBtn.textContent='⏳ جارٍ التحديد...';locStatus.textContent='اطلب الإذن للوصول للموقع';
-        navigator.geolocation.getCurrentPosition(pos=>{lat=pos.coords.latitude;lon=pos.coords.longitude;locStatus.textContent=`✅ ${lat.toFixed(6)}, ${lon.toFixed(6)}`;locBtn.disabled=false;locBtn.textContent='📍 تحديث موقعي'},err=>{locStatus.textContent='❌ تعذر تحديد الموقع';locBtn.disabled=false;locBtn.textContent='📍 تحديد موقعي'})
+        locBtn.disabled=true;locBtn.textContent='⏳ جارٍ التحديد...';locStatus.textContent='اطلب الإذن ل��وصول للموقع';
+        navigator.geolocation.getCurrentPosition(pos=>{lat=pos.coords.latitude;lon=pos.coords.longitude;locStatus.textContent=`✅ ${lat.toFixed(6)}, ${lon.toFixed(6)}`;locBtn.disabled=false;locBtn.textContent='📍 تحديث موقعي'},err=>{locStatus.textContent='❌ تعذر تحديد الموقع';locBtn.disabled=false;locBtn.textContent='📍 تحديد موقعي'});
       });
 
       submitBtn.addEventListener('click',()=>{
@@ -149,13 +153,13 @@
         // save
         try{localStorage.setItem('yamama_last_order',JSON.stringify(currentOrder));let orders=JSON.parse(localStorage.getItem('yamama_orders')||'[]');orders.push(currentOrder);localStorage.setItem('yamama_orders',JSON.stringify(orders));}catch(e){console.error(e)}
         sending=true;submitBtn.disabled=true;submitBtn.textContent='✓ تم الإرسال';showToast('تم إرسال الطلب');
-        // show chat
-        afterPanel.style.display='block';messagesEl.innerHTML=`<div class="message customer">تم استلام طلبك: <strong>${currentOrder.productName}</strong></div>`;
+        // show chat but do not inject product info into messages
+        afterPanel.style.display='block';systemNote.textContent='تم إرسال طلبك بنجاح. ستتواصل معك الإدارة لتأكيد التفاصيل.';systemNote.style.display='block';messagesEl.innerHTML='';
         setTimeout(()=>{sending=false;submitBtn.disabled=false},800);
       });
 
       sendMsg.addEventListener('click',()=>{
-        const txt=document.getElementById('msg-input').value.trim();if(!txt)return;const bubble=document.createElement('div');bubble.className='message customer';bubble.textContent=txt;messagesEl.appendChild(bubble);document.getElementById('msg-input').value='';setTimeout(()=>{const r=document.createElement('div');r.className='message manager';r.textContent='شكراً، ستتصل بك الإدارة قريباً.';messagesEl.appendChild(r)},700);
+        const txt=document.getElementById('msg-input').value.trim();if(!txt) return;const bubble=document.createElement('div');bubble.className='message customer';bubble.textContent=txt;messagesEl.appendChild(bubble);document.getElementById('msg-input').value='';setTimeout(()=>{const r=document.createElement('div');r.className='message manager';r.textContent='شكراً، ستتصل بك الإدارة قريباً.';messagesEl.appendChild(r)},700);
       });
 
       // initial render
