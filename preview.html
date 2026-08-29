@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>معاينة - دجاج اليمامة (اختبار)</title>
+  <style>
+    :root{--main:#1d5287;--card:#2e74a8}
+    body{font-family: Tajawal, system-ui, Arial; background:linear-gradient(180deg,#5B9BD5 0%,#4A8BC7 60%);color:#fff;margin:0;padding:12px}
+    .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    h1{margin:6px 0;font-size:28px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .card{background:rgba(255,255,255,0.08);border-radius:14px;padding:12px;display:flex;flex-direction:column;align-items:center;border:1px solid rgba(255,255,255,0.12)}
+    .price{background:#fff;color:var(--main);padding:6px 10px;border-radius:8px;font-weight:700;margin:8px 0}
+    .order-btn{background:linear-gradient(180deg,var(--main),#164070);color:#fff;border:none;padding:8px 12px;border-radius:12px;font-weight:700;cursor:pointer}
+    .order-btn:active{transform:translateY(1px)}
+    /* overlay form */
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:999}
+    .modal{background:#fff;color:#222;border-radius:12px;padding:16px;width:92%;max-width:480px;direction:rtl}
+    .modal h2{margin:0 0 8px 0;color:var(--main)}
+    label{display:block;margin-top:8px;font-weight:600}
+    input,textarea,button{width:100%;box-sizing:border-box;font-size:16px;padding:8px;border-radius:8px;border:1px solid #ccc}
+    textarea{min-height:80px}
+    .small{width:auto;display:inline-block}
+    .row{display:flex;gap:8px}
+    .toast{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:#000;color:#fff;padding:8px 12px;border-radius:10px;opacity:0;transition:opacity .2s;z-index:1000}
+    .chat{background:#fff;color:#222;border-radius:12px;padding:12px;margin-top:12px}
+    .message{padding:8px;border-radius:8px;margin-bottom:8px}
+    .message.customer{background:#e6f2ff;text-align:right}
+    .message.manager{background:#f2f2f2;text-align:left}
+    @media (max-width:420px){h1{font-size:22px}.grid{grid-template-columns:1fr 1fr}}
+  </style>
+</head>
+<body>
+  <div class="top">
+    <div><strong style="font-size:18px">دجاج اليمامه</strong></div>
+    <div style="opacity:.9">معاينة تفاعلية</div>
+  </div>
+  <h1>منتجاتنا</h1>
+
+  <div id="products" class="grid">
+    <!-- cards rendered here -->
+  </div>
+
+  <div id="overlay" class="overlay">
+    <div class="modal" role="dialog" aria-modal="true">
+      <h2 id="modal-title">تأكيد الطلب</h2>
+      <div id="selected" style="margin-bottom:8px;color:#333"></div>
+
+      <label for="name">الاسم الكامل</label>
+      <input id="name" placeholder="اكتب اسمك الكامل">
+
+      <label for="phone">رقم الهاتف</label>
+      <input id="phone" placeholder="مثال: 09xxxxxxxx" inputmode="tel">
+
+      <label for="address">عنوان التوصيل</label>
+      <textarea id="address" placeholder="اكتب المحافظة والمدينة والشارع وأي علامة"></textarea>
+
+      <label style="margin-top:8px">موقع التوصيل</label>
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <button id="loc-btn" class="order-btn small" type="button">📍 تحديد موقعي</button>
+        <div id="loc-status" style="flex:1;padding:8px;background:#f6f6f6;border-radius:8px;color:#333;align-self:center;font-size:13px">لم يتم تحديد الموقع</div>
+      </div>
+
+      <label style="margin-top:6px"><input type="checkbox" id="agree"> أؤكد أن البيانات صحيحة</label>
+
+      <div style="margin-top:10px;display:flex;gap:8px">
+        <button id="submit" class="order-btn" type="button">🐔 إرسال الطلب</button>
+        <button id="close" style="background:#eee;color:#333;border:none;padding:8px 12px;border-radius:8px">إغلاق</button>
+      </div>
+
+      <div id="after" class="chat" style="display:none">
+        <strong>محادثة مع الإدارة</strong>
+        <div id="messages"></div>
+        <textarea id="msg-input" placeholder="اكتب رسالة..." style="margin-top:8px"></textarea>
+        <button id="send-msg" class="order-btn" style="margin-top:8px">إرسال</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    (function(){
+      'use strict';
+      const DEFAULT_PRODUCTS=[
+        {id:'p1',name:'قطع دجاج',price:'18000'},
+        {id:'p2',name:'دجاج كامل',price:'25000'},
+        {id:'p3',name:'صدور دجاج',price:'24000'},
+        {id:'p4',name:'أجنحة دجاج',price:'16000'},
+        {id:'p5',name:'أوراك دجاج',price:'15000'},
+        {id:'p6',name:'كبدة دجاج',price:'12000'},
+        {id:'p7',name:'أعناق دجاج',price:'10000'},
+        {id:'p8',name:'قوانص دجاج',price:'11000'}
+      ];
+
+      const productsEl=document.getElementById('products');
+      const overlay=document.getElementById('overlay');
+      const selected=document.getElementById('selected');
+      const toastEl=document.getElementById('toast');
+      const locBtn=document.getElementById('loc-btn');
+      const locStatus=document.getElementById('loc-status');
+      const submitBtn=document.getElementById('submit');
+      const closeBtn=document.getElementById('close');
+      const afterPanel=document.getElementById('after');
+      const messagesEl=document.getElementById('messages');
+      const sendMsg=document.getElementById('send-msg');
+
+      let currentOrder=null; let lat=null; let lon=null; let sending=false;
+
+      function showToast(text,timeout=2000){toastEl.textContent=text;toastEl.style.opacity='1';clearTimeout(toastEl._t);toastEl._t=setTimeout(()=>{toastEl.style.opacity='0'},timeout)}
+
+      function renderProducts(){productsEl.innerHTML='';DEFAULT_PRODUCTS.forEach(p=>{
+        const d=document.createElement('div');d.className='card';d.innerHTML=`<div style="text-align:center"><h3 style="margin:6px 0;color:#fff">${p.name}</h3><div style="opacity:.9">طازج يومياً</div></div><div class="price">${p.price} ل.س</div><button class="order-btn" data-id="${p.id}">طلب</button>`;productsEl.appendChild(d);
+      });
+      // attach listeners
+      productsEl.querySelectorAll('[data-id]').forEach(btn=>btn.addEventListener('click',e=>{
+        const id=e.currentTarget.dataset.id;startOrder(id);
+      }));}
+
+      function startOrder(productId){
+        const p=DEFAULT_PRODUCTS.find(x=>x.id===productId);if(!p){showToast('خطأ: المنتج غير موجود');return}
+        currentOrder={id:'YM-'+Date.now(),productId:p.id,productName:p.name,price:p.price,quantity:1,status:'تم الاستلام',createdAt:new Date().toISOString()};
+        selected.innerHTML=`<div style="font-weight:700;color:var(--main)">${p.name}</div><div style="margin-top:6px">السعر: ${p.price} ل.س</div>`;
+        // reset form
+        document.getElementById('name').value='';document.getElementById('phone').value='';document.getElementById('address').value='';document.getElementById('agree').checked=false;lat=null;lon=null;locStatus.textContent='لم يتم تحديد الموقع';afterPanel.style.display='none';messagesEl.innerHTML='';overlay.style.display='flex';
+      }
+
+      function closeOverlay(){overlay.style.display='none'}
+
+      closeBtn.addEventListener('click',closeOverlay);
+
+      locBtn.addEventListener('click',()=>{
+        if(!navigator.geolocation){locStatus.textContent='جهازك لا يدعم تحديد الموقع';return}
+        locBtn.disabled=true;locBtn.textContent='⏳ جارٍ التحديد...';locStatus.textContent='اطلب الإذن للوصول للموقع';
+        navigator.geolocation.getCurrentPosition(pos=>{lat=pos.coords.latitude;lon=pos.coords.longitude;locStatus.textContent=`✅ ${lat.toFixed(6)}, ${lon.toFixed(6)}`;locBtn.disabled=false;locBtn.textContent='📍 تحديث موقعي'},err=>{locStatus.textContent='❌ تعذر تحديد الموقع';locBtn.disabled=false;locBtn.textContent='📍 تحديد موقعي'})
+      });
+
+      submitBtn.addEventListener('click',()=>{
+        if(sending) return; // prevent double
+        if(!currentOrder){showToast('لا يوجد طلب');return}
+        const name=document.getElementById('name').value.trim();const phone=document.getElementById('phone').value.trim();const address=document.getElementById('address').value.trim();const agree=document.getElementById('agree').checked;
+        if(!name){showToast('يرجى كتابة الاسم الكامل');return}
+        if(!phone || phone.length<7){showToast('رقم الهاتف غير صالح');return}
+        if(!address){showToast('يرجى كتابة عنوان التوصيل');return}
+        if(!agree){showToast('يرجى تأكيد صحة البيانات');return}
+        // update order
+        currentOrder.customerName=name;currentOrder.customerPhone=phone;currentOrder.customerAddress=address;currentOrder.latitude=lat;currentOrder.longitude=lon;currentOrder.createdAt=new Date().toISOString();
+        // save
+        try{localStorage.setItem('yamama_last_order',JSON.stringify(currentOrder));let orders=JSON.parse(localStorage.getItem('yamama_orders')||'[]');orders.push(currentOrder);localStorage.setItem('yamama_orders',JSON.stringify(orders));}catch(e){console.error(e)}
+        sending=true;submitBtn.disabled=true;submitBtn.textContent='✓ تم الإرسال';showToast('تم إرسال الطلب');
+        // show chat
+        afterPanel.style.display='block';messagesEl.innerHTML=`<div class="message customer">تم استلام طلبك: <strong>${currentOrder.productName}</strong></div>`;
+        setTimeout(()=>{sending=false;submitBtn.disabled=false},800);
+      });
+
+      sendMsg.addEventListener('click',()=>{
+        const txt=document.getElementById('msg-input').value.trim();if(!txt)return;const bubble=document.createElement('div');bubble.className='message customer';bubble.textContent=txt;messagesEl.appendChild(bubble);document.getElementById('msg-input').value='';setTimeout(()=>{const r=document.createElement('div');r.className='message manager';r.textContent='شكراً، ستتصل بك الإدارة قريباً.';messagesEl.appendChild(r)},700);
+      });
+
+      // initial render
+      renderProducts();
+
+    })();
+  </script>
+</body>
+</html>
