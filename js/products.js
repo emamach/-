@@ -233,7 +233,7 @@ function renderStoreProducts() {
 
 
           <button
-            class="btn-buy"
+            class="order-btn"
             type="button"
             onclick="startOrder('${product.id}')"
           >
