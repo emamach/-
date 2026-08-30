@@ -16,7 +16,7 @@ const DEFAULT_PRODUCTS = [
     id: "p1",
     name: "قطع دجاج",
     price: "18000",
-    image: "",
+    image: "https://kimi-web-img.kimi.ai/img/static.vecteezy.com/7ca47ffc2bd97e9acbab069f199f8e93cc12607c.jpg",
     active: true
   },
 
@@ -24,7 +24,7 @@ const DEFAULT_PRODUCTS = [
     id: "p2",
     name: "دجاج كامل",
     price: "25000",
-    image: "",
+    image: "https://kimi-web-img.kimi.ai/img/c8.alamy.com/6aa849cb70f891bbeadcbf72763c238958923703.jpg",
     active: true
   },
 
@@ -32,7 +32,7 @@ const DEFAULT_PRODUCTS = [
     id: "p3",
     name: "صدور دجاج",
     price: "24000",
-    image: "",
+    image: "https://kimi-web-img.kimi.ai/img/img.magnific.com/024b6148b62dc4a1d85654da6b6805c2fdee21b1.jpg",
     active: true
   },
 
@@ -40,7 +40,7 @@ const DEFAULT_PRODUCTS = [
     id: "p4",
     name: "أجنحة دجاج",
     price: "16000",
-    image: "",
+    image: "https://kimi-web-img.kimi.ai/img/static.vecteezy.com/e2c73704e51fc4650566e1a571a87fe2ca16a484.jpg",
     active: true
   },
 
@@ -48,7 +48,7 @@ const DEFAULT_PRODUCTS = [
     id: "p5",
     name: "أوراك دجاج",
     price: "15000",
-    image: "",
+    image: "https://kimi-web-img.kimi.ai/img/static.vecteezy.com/e6629db8551ef44aa4cde6031c26bacd573650f5.JPG",
     active: true
   },
 
@@ -56,7 +56,7 @@ const DEFAULT_PRODUCTS = [
     id: "p6",
     name: "كبدة دجاج",
     price: "12000",
-    image: "",
+    image: "https://kimi-web-img.kimi.ai/img/media02.stockfood.com/cc406167ec693c1be2f071f7ff70657bb8991d86.jpg",
     active: true
   },
 
@@ -64,7 +64,7 @@ const DEFAULT_PRODUCTS = [
     id: "p7",
     name: "أعناق دجاج",
     price: "10000",
-    image: "",
+    image: "https://kimi-web-img.kimi.ai/img/as2.ftcdn.net/b03a039d12ce028a2dda3d409bd9ba16f6a1fda1.jpg",
     active: true
   },
 
@@ -72,7 +72,7 @@ const DEFAULT_PRODUCTS = [
     id: "p8",
     name: "قوانص دجاج",
     price: "11000",
-    image: "",
+    image: "https://kimi-web-img.kimi.ai/img/c8.alamy.com/c82e7d8f10c343c12bede7c7a16e46903921291f.jpg",
     active: true
   }
 
@@ -188,6 +188,7 @@ function renderStoreProducts() {
           <img
             src="${product.image}"
             alt="${escapeStoreHTML(product.name)}"
+            class="product-img"
           >
 
         `;
@@ -198,6 +199,7 @@ function renderStoreProducts() {
 
           <div
             class="product-no-image"
+            style="font-size:2rem"
           >
             🐔
           </div>
@@ -211,22 +213,25 @@ function renderStoreProducts() {
 
         <div>
 
-          <h3>
+          <div class="image-wrapper">
+            <div class="wooden-plate"></div>
+            ${imageHTML}
+          </div>
+
+          <div class="product-title">
             ${escapeStoreHTML(product.name)}
-          </h3>
+          </div>
 
           <div class="tag">
             طازج يومياً
           </div>
-
-          ${imageHTML}
 
         </div>
 
 
         <div>
 
-          <div class="price-tag">
+          <div class="price-box price-tag">
             ${escapeStoreHTML(product.price)}
             ل.س
           </div>
@@ -235,7 +240,7 @@ function renderStoreProducts() {
           <button
             class="order-btn"
             type="button"
-            onclick="startOrder('${product.id}')"
+            data-id="${product.id}"
           >
             طلب
           </button>
