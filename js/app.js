@@ -1,8 +1,11 @@
 // ============================================
-// 1. إنشاء عنصر Toast (إشعار) إذا لم يكن موجودًا
+// Yamama common app helpers (fixed)
 // ============================================
+
+// Ensure we use a single toast element. Some pages use id="yamama-toast".
 function ensureToastElement() {
-  let toast = document.getElementById('toast');
+  let toast = document.getElementById('toast') || document.getElementById('yamama-toast');
+
   if (!toast) {
     toast = document.createElement('div');
     toast.id = 'toast';
@@ -25,76 +28,87 @@ function ensureToastElement() {
     `;
     document.body.appendChild(toast);
   }
+
   return toast;
 }
 
-// ============================================
-// 2. دالة إظهار Toast مع إخفاء تلقائي
-// ============================================
-function showToast(message) {
+function showToast(message, timeout = 2500) {
   const toast = ensureToastElement();
   toast.textContent = message;
-  toast.style.opacity = '1';
   toast.style.visibility = 'visible';
+  toast.style.opacity = '1';
 
-  // إلغاء أي مؤقت سابق
   clearTimeout(window.yamamaToastTimer);
-
-  // إخفاء بعد 2.5 ثانية
   window.yamamaToastTimer = setTimeout(() => {
     toast.style.opacity = '0';
-    toast.style.visibility = 'hidden';
-  }, 2500);
+    // keep visibility hidden after animation
+    setTimeout(() => { toast.style.visibility = 'hidden'; }, 300);
+  }, timeout);
 }
 
-// ============================================
-// 3. دوال تحميل البيانات
-// ============================================
-function loadTicker() {
-  console.log('Ticker loaded');
+// Lightweight helpers used across pages
+function safeTextFromCard(card) {
+  if (!card) return { name: 'منتج', price: '' };
+  const nameEl = card.querySelector('.product-title') || card.querySelector('h3') || card.querySelector('.selected-product-name');
+  const priceEl = card.querySelector('.price-box') || card.querySelector('.price-tag') || card.querySelector('.price') || card.querySelector('.selected-product-price');
+  const name = nameEl ? nameEl.textContent.trim() : 'منتج';
+  const price = priceEl ? priceEl.textContent.trim() : '';
+  return { name, price };
 }
 
-function renderProducts() {
-  console.log('Products rendered');
-}
-
-// ============================================
-// 4. معالجة النقر على الأزرار
-// ============================================
+// Handle clicks for buttons and links in a robust way.
 function handleButtonClick(event) {
-  const target = event.target.closest('button, a');
+  // Ignore right clicks / modified clicks
+  if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
 
+  const target = event.target.closest('button, a');
   if (!target) return;
 
-  // زر "طلب" الخاص بالمنتج
-  if (target.classList.contains('order-btn')) {
-    const card = target.closest('.card');
-    if (card) {
-      const productName = card.querySelector('.product-title')?.textContent || 'منتج';
-      const price = card.querySelector('.price-box')?.textContent || '';
-      showToast(`تمت إضافة "${productName}" (${price} د.ل) إلى السلة`);
+  // If button has data-id (modern markup), prefer that for starting an order
+  if (target.classList.contains('order-btn') && target.dataset && target.dataset.id) {
+    // defend in case startOrder isn't available
+    if (typeof window.startOrder === 'function') {
+      window.startOrder(target.dataset.id);
+      return;
     }
   }
-}
 
-// ============================================
-// 5. تهيئة التطبيق
-// ============================================
-function initYamamaApp() {
-  loadTicker();
-  renderProducts();
-  document.addEventListener('click', handleButtonClick);
+  // Legacy: some pages rely on onclick="startOrder('id')" on the button itself.
+  // We only need to show a toast when an order button is clicked.
+  if (target.classList.contains('order-btn')) {
+    const card = target.closest('.card');
+    const { name, price } = safeTextFromCard(card);
+    // normalize price display: ensure currency appears as "ل.س" with no extra spaces
+    const normalizedPrice = price.replace(/\s*ل\.?\s?س\.?\s*/g, '') || price;
+    showToast(`تمت إضافة "${name}" (${normalizedPrice ? normalizedPrice + ' ل.س' : 'سعر غير معروف'}) إلى السلة`);
+    return;
+  }
 
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker
-      .register('sw.js')
-      .catch(error => {
-        console.log('Service Worker:', error);
-      });
+  // Buttons that are links or actions we can enhance here (call manager / home)
+  if (target.classList.contains('call-button') || target.matches('a.call-manager')) {
+    // let existing onclick or href handle it; we could add analytics here
+    return;
   }
 }
 
-// ============================================
-// 6. تشغيل التطبيق
-// ============================================
+function initYamamaApp() {
+  // old page helpers
+  if (typeof loadTicker === 'function') {
+    try { loadTicker(); } catch (e) { /* ignore */ }
+  }
+  if (typeof renderProducts === 'function') {
+    try { renderProducts(); } catch (e) { /* ignore */ }
+  }
+
+  // Global delegated click handler (robust and won't break inline onclick handlers)
+  document.addEventListener('click', handleButtonClick);
+
+  // Register service worker if available
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(error => {
+      console.log('Service Worker:', error);
+    });
+  }
+}
+
 document.addEventListener('DOMContentLoaded', initYamamaApp);
