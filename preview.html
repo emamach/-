@@ -97,6 +97,21 @@
         {id:'p8',name:'قوانص دجاج',price:'11000',image:'https://kimi-web-img.kimi.ai/img/c8.alamy.com/c82e7d8f10c343c12bede7c7a16e46903921291f.jpg'}
       ];
 
+      // Read products from localStorage if available; fall back to DEFAULT_PRODUCTS
+      function loadProductsFromStorage(){
+        try{
+          const saved = localStorage.getItem('yamama_products');
+          if(!saved) return DEFAULT_PRODUCTS;
+          const parsed = JSON.parse(saved);
+          if(Array.isArray(parsed) && parsed.length>0) return parsed;
+          return DEFAULT_PRODUCTS;
+        }catch(e){
+          return DEFAULT_PRODUCTS;
+        }
+      }
+
+      let PRODUCTS = loadProductsFromStorage();
+
       const productsEl=document.getElementById('products');
       const overlay=document.getElementById('overlay');
       const selected=document.getElementById('selected');
@@ -112,18 +127,40 @@
 
       let currentOrder=null; let lat=null; let lon=null; let sending=false;
 
-      function showToast(text,timeout=2000){toastEl.textContent=text;toastEl.style.opacity='1';clearTimeout(toastEl._t);toastEl._t=setTimeout(()=>{toastEl.style.opacity='0'},timeout)}
+      function showToast(text,timeout=2000){
+        toastEl.textContent=text;
+        toastEl.style.opacity='1';
+        clearTimeout(toastEl._t);
+        toastEl._t=setTimeout(()=>{toastEl.style.opacity='0'},timeout);
+      }
 
-      function renderProducts(){productsEl.innerHTML='';DEFAULT_PRODUCTS.forEach(p=>{
-        const d=document.createElement('div');d.className='card';d.innerHTML=`<img class="product-img" src="${p.image}" alt="${p.name}"><div style="text-align:center"><h3 style="margin:6px 0;color:#fff">${p.name}</h3><div style="opacity:.9">طازج يومياً</div></div><div class="price">${p.price} ل.س</div><button class="order-btn" data-id="${p.id}">طلب</button>`;productsEl.appendChild(d);
-      });
-      // attach listeners
-      productsEl.querySelectorAll('[data-id]').forEach(btn=>btn.addEventListener('click',e=>{
-        const id=e.currentTarget.dataset.id;startOrder(id);
-      }));}
+      function renderProducts(){
+        // reload PRODUCTS in case admin changed them and saved to localStorage
+        PRODUCTS = loadProductsFromStorage();
+        productsEl.innerHTML='';
+        PRODUCTS.filter(p=>p.active!==false).forEach(p=>{
+          const d=document.createElement('div');
+          d.className='card';
+          d.innerHTML = `
+            <img class="product-img" src="${p.image}" alt="${p.name}">
+            <div style="text-align:center">
+              <h3 style="margin:6px 0;color:#fff">${p.name}</h3>
+              <div style="opacity:.9">طازج يومياً</div>
+            </div>
+            <div class="price">${p.price} ل.س</div>
+            <button class="order-btn" data-id="${p.id}">طلب</button>
+          `;
+          productsEl.appendChild(d);
+        });
+        // attach listeners (delegated handler already exists in js/app.js, but keep local binding for preview)
+        productsEl.querySelectorAll('[data-id]').forEach(btn=>btn.addEventListener('click',e=>{
+          const id=e.currentTarget.dataset.id; startOrder(id);
+        }));
+      }
 
       function startOrder(productId){
-        const p=DEFAULT_PRODUCTS.find(x=>x.id===productId);if(!p){showToast('خطأ: المنتج غير موجود');return}
+        const p = PRODUCTS.find(x=>x.id===productId);
+        if(!p){ showToast('خطأ: المنتج غير موجود'); return; }
         currentOrder={id:'YM-'+Date.now(),productId:p.id,productName:p.name,price:p.price,quantity:1,status:'تم الاستلام',createdAt:new Date().toISOString()};
         selected.innerHTML=`<div style="font-weight:700;color:var(--main)">${p.name}</div><div style="margin-top:6px">السعر: ${p.price} ل.س</div>`;
         // reset form
@@ -136,7 +173,7 @@
 
       locBtn.addEventListener('click',()=>{
         if(!navigator.geolocation){locStatus.textContent='جهازك لا يدعم تحديد الموقع';return}
-        locBtn.disabled=true;locBtn.textContent='⏳ جارٍ التحديد...';locStatus.textContent='اطلب الإذن ل��وصول للموقع';
+        locBtn.disabled=true;locBtn.textContent='⏳ جارٍ التحديد...';locStatus.textContent='اطلب الإذن للوصول للموقع';
         navigator.geolocation.getCurrentPosition(pos=>{lat=pos.coords.latitude;lon=pos.coords.longitude;locStatus.textContent=`✅ ${lat.toFixed(6)}, ${lon.toFixed(6)}`;locBtn.disabled=false;locBtn.textContent='📍 تحديث موقعي'},err=>{locStatus.textContent='❌ تعذر تحديد الموقع';locBtn.disabled=false;locBtn.textContent='📍 تحديد موقعي'});
       });
 
@@ -151,15 +188,20 @@
         // update order
         currentOrder.customerName=name;currentOrder.customerPhone=phone;currentOrder.customerAddress=address;currentOrder.latitude=lat;currentOrder.longitude=lon;currentOrder.createdAt=new Date().toISOString();
         // save
-        try{localStorage.setItem('yamama_last_order',JSON.stringify(currentOrder));let orders=JSON.parse(localStorage.getItem('yamama_orders')||'[]');orders.push(currentOrder);localStorage.setItem('yamama_orders',JSON.stringify(orders));}catch(e){console.error(e)}
+        try{
+          localStorage.setItem('yamama_last_order',JSON.stringify(currentOrder));
+          let orders = JSON.parse(localStorage.getItem('yamama_orders')||'[]');
+          orders.push(currentOrder);
+          localStorage.setItem('yamama_orders',JSON.stringify(orders));
+        }catch(e){ /* ignore */ }
         sending=true;submitBtn.disabled=true;submitBtn.textContent='✓ تم الإرسال';showToast('تم إرسال الطلب');
         // show chat but do not inject product info into messages
-        afterPanel.style.display='block';systemNote.textContent='تم إرسال طلبك بنجاح. ستتواصل معك الإدارة لتأكيد التفاصيل.';systemNote.style.display='block';messagesEl.innerHTML='';
+        afterPanel.style.display='block';systemNote.textContent='تم إرسال طلبك بنجاح. ستتواصل معك الإدارة لتأكيد التفاصيل.';systemNote.style.display='block';
         setTimeout(()=>{sending=false;submitBtn.disabled=false},800);
       });
 
       sendMsg.addEventListener('click',()=>{
-        const txt=document.getElementById('msg-input').value.trim();if(!txt) return;const bubble=document.createElement('div');bubble.className='message customer';bubble.textContent=txt;messagesEl.appendChild(bubble);document.getElementById('msg-input').value='';setTimeout(()=>{const r=document.createElement('div');r.className='message manager';r.textContent='شكراً، ستتصل بك الإدارة قريباً.';messagesEl.appendChild(r)},700);
+        const txt=document.getElementById('msg-input').value.trim();if(!txt) return;const bubble=document.createElement('div');bubble.className='message customer';bubble.textContent=txt;messagesEl.appendChild(bubble);document.getElementById('msg-input').value='';
       });
 
       // initial render
