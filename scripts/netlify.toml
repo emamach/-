@@ -3,6 +3,13 @@ import path from "path";
 
 const ROOT = process.cwd();
 
+const API_KEY = process.env.OPENAI_API_KEY;
+const GMI_BASE_URL =
+  process.env.GMI_BASE_URL || "https://api.gmi-serving.com/v1";
+
+const GMI_MODEL =
+  process.env.GMI_MODEL || "openai/gpt-5.6";
+
 const ALLOWED_EXTENSIONS = new Set([
   ".html",
   ".htm",
@@ -11,10 +18,8 @@ const ALLOWED_EXTENSIONS = new Set([
   ".cjs",
   ".css",
   ".json",
-  ".md",
-  ".txt",
-  ".xml",
-  ".svg"
+  ".svg",
+  ".md"
 ]);
 
 const IGNORED_DIRS = new Set([
@@ -25,47 +30,56 @@ const IGNORED_DIRS = new Set([
   "dist",
   "build",
   "coverage",
-  "vendor"
+  "vendor",
+  ".cache"
 ]);
 
 const MAX_FILE_SIZE = 250000;
-const MAX_TOTAL_CHARS = 180000;
+const MAX_TOTAL_CHARS = 150000;
 
 function walk(dir) {
-  const results = [];
+  const files = [];
 
-  for (const entry of fs.readdirSync(dir, {
-    withFileTypes: true
-  })) {
+  let entries;
+
+  try {
+    entries = fs.readdirSync(dir, {
+      withFileTypes: true
+    });
+  } catch {
+    return files;
+  }
+
+  for (const entry of entries) {
     const fullPath = path.join(dir, entry.name);
 
     if (entry.isDirectory()) {
       if (!IGNORED_DIRS.has(entry.name)) {
-        results.push(...walk(fullPath));
+        files.push(...walk(fullPath));
       }
+
       continue;
     }
 
-    const ext = path.extname(entry.name).toLowerCase();
+    const extension =
+      path.extname(entry.name).toLowerCase();
 
-    if (!ALLOWED_EXTENSIONS.has(ext)) {
+    if (!ALLOWED_EXTENSIONS.has(extension)) {
       continue;
     }
 
     try {
       const stat = fs.statSync(fullPath);
 
-      if (stat.size > MAX_FILE_SIZE) {
-        continue;
+      if (stat.size <= MAX_FILE_SIZE) {
+        files.push(fullPath);
       }
-
-      results.push(fullPath);
     } catch {
-      // تجاهل الملف إذا تعذر قراءته
+      // تجاهل الملف
     }
   }
 
-  return results;
+  return files;
 }
 
 function readProject() {
@@ -75,9 +89,12 @@ function readProject() {
   const output = [];
 
   for (const file of files) {
-    const relative = path.relative(ROOT, file);
+    const relativePath = path.relative(ROOT, file);
 
-    if (relative === "scripts/ai-audit.mjs") {
+    if (
+      relativePath === "scripts/ai-audit.mjs" ||
+      relativePath === "ai-audit-report.md"
+    ) {
       continue;
     }
 
@@ -93,18 +110,22 @@ function readProject() {
       continue;
     }
 
-    const remaining = MAX_TOTAL_CHARS - totalChars;
+    const remaining =
+      MAX_TOTAL_CHARS - totalChars;
 
     if (remaining <= 0) {
       break;
     }
 
-    const clipped = content.slice(0, remaining);
+    const clipped =
+      content.length > remaining
+        ? content.slice(0, remaining)
+        : content;
 
     output.push(
-      `\n===== FILE: ${relative} =====\n` +
-      `${clipped}\n` +
-      `===== END FILE =====\n`
+      `\n===== FILE: ${relativePath} =====\n` +
+      clipped +
+      `\n===== END FILE =====\n`
     );
 
     totalChars += clipped.length;
@@ -113,150 +134,194 @@ function readProject() {
   return output.join("\n");
 }
 
-async function callGMI(projectCode) {
-  const apiKey = process.env.OPENAI_API_KEY;
+function createPrompt(projectCode) {
+  return `
+أنت مهندس برمجيات Senior ومتخصص في تدقيق تطبيقات الويب.
 
-  if (!apiKey) {
-    throw new Error(
-      "OPENAI_API_KEY غير موجود في Netlify."
-    );
-  }
+اسم المشروع:
+دجاج اليمامة
 
-  const prompt = `
-أنت مهندس برمجيات خبير في فحص وإصلاح تطبيقات الويب.
-
-هذا مشروع متجر عربي باسم "دجاج اليمامة".
-
-أريد منك إجراء تدقيق هندسي شامل للكود الموجود أدناه.
+المطلوب:
+إجراء تدقيق شامل للكود المرفق.
 
 مهم جدًا:
-لا تعدّل أي ملف الآن.
-لا تقترح إعادة بناء المشروع من الصفر.
-حافظ على البنية الحالية.
-حلل المشروع كما هو.
+لا تعدّل الملفات.
+لا تحذف أي ملف.
+لا تعيد بناء المشروع من الصفر.
+لا تفترض وجود Framework غير موجود.
+حلل البنية الحالية كما هي.
+
+ركز بشكل خاص على المشاكل التي أبلغ عنها صاحب المشروع:
+
+1. بعض الأزرار لا تعمل.
+2. زر "شراء" يفتح صفحة أخرى.
+3. الصفحة التي تظهر بعد الضغط على شراء تفقد الألوان والتنسيق.
+4. توجد أخطاء كثيرة في الكود.
+5. نريد التأكد من سلامة بنية المشروع كاملة.
 
 افحص:
 
-1. أخطاء JavaScript.
-2. أخطاء HTML.
-3. أخطاء CSS.
-4. الأزرار التي لا تعمل.
-5. onclick وevent listeners.
-6. روابط الصفحات.
-7. مشاكل التنقل.
-8. زر شراء.
-9. صفحة ما بعد الضغط على شراء.
-10. سبب فقدان الألوان والتنسيق.
-11. ملفات CSS غير المحملة.
-12. ملفات JavaScript غير المحملة.
-13. مسارات الصور.
-14. localStorage.
-15. بيانات المنتجات.
-16. نظام الطلبات.
-17. صفحة index.html.
-18. admin.html.
-19. camera.html.
-20. chat.html.
-21. order.html.
-22. preview.html.
-23. tracking.html.
-24. manifest.json.
-25. مجلد js.
-26. مجلد css.
-27. مجلد assets.
-28. توافق Netlify.
-29. توافق GitHub Pages.
-30. مشاكل الهاتف.
-31. أخطاء JavaScript المحتملة في Console.
-32. ملفات مفقودة.
-33. روابط إلى ملفات غير موجودة.
-34. أكواد مكررة أو متعارضة.
-35. مشاكل البنية العامة للمشروع.
-36. مشاكل الأمان.
-37. أي API keys أو أسرار مكشوفة داخل الكود.
+HTML
+CSS
+JavaScript
+JavaScript Events
+onclick
+addEventListener
+روابط الصفحات
+مسارات الملفات
+مسارات CSS
+مسارات JavaScript
+مسارات الصور
+localStorage
+sessionStorage
+بيانات المنتجات
+نظام الشراء
+نظام الطلبات
+صفحات الإدارة
+صفحات التتبع
+صفحات الكاميرات
+صفحة المحادثة
+manifest.json
+ملفات js
+ملفات css
+assets
+Netlify
+GitHub Pages
+التوافق مع الهاتف
+الأخطاء المحتملة في Console
+الملفات المفقودة
+الروابط المكسورة
+الأكواد المتكررة
+الأكواد المتعارضة
+المشاكل الأمنية
+أي API Keys أو Secrets مكشوفة
 
-أريد تقريرًا احترافيًا بهذه الصيغة:
+افحص خصوصًا هذه الصفحات إن كانت موجودة:
 
-# التقرير العام
+index.html
+admin.html
+camera.html
+chat.html
+order.html
+preview.html
+tracking.html
 
-أعطني ملخصًا لحالة المشروع.
+إذا كانت الصفحة غير موجودة فلا تعتبر ذلك خطأ في حد ذاته.
+اذكر فقط أنها غير موجودة إذا كان هناك كود يشير إليها.
 
-# الأخطاء الحرجة
+أريد التقرير بهذا الشكل:
+
+# تقرير تدقيق مشروع دجاج اليمامة
+
+## 1. الحالة العامة
+
+أعطني تقييمًا عامًا للمشروع.
+
+## 2. الأخطاء الحرجة
 
 لكل خطأ:
-- رقم الخطأ
+- رقم
 - الملف
+- السطر إن أمكن
 - المشكلة
 - السبب
-- الحل المقترح
+- الحل
 
-# أخطاء JavaScript
+## 3. أخطاء JavaScript
 
-# أخطاء HTML
+## 4. أخطاء HTML
 
-# أخطاء CSS
+## 5. أخطاء CSS
 
-# مشاكل التنقل والصفحات
+## 6. الأزرار التي لا تعمل
 
-# مشكلة زر شراء
+اذكر اسم الزر والملف وسبب المشكلة.
 
-# مشكلة الصفحة الثانية
+## 7. مشكلة زر شراء
 
-# مشاكل التصميم والألوان
+تتبع عملية الشراء من الضغط على الزر حتى الصفحة التالية.
 
-# مشاكل الهاتف
+## 8. مشكلة الصفحة الثانية
 
-# مشاكل Netlify
+حدد لماذا قد تفقد CSS أو الألوان أو التنسيق.
 
-# مشاكل GitHub Pages
+## 9. مشاكل المسارات
 
-# مشاكل الأمان
+افحص جميع روابط:
+CSS
+JS
+صور
+صفحات HTML
 
-# الملفات التي تحتاج إلى تعديل
+## 10. مشاكل الهاتف
 
-# خطة الإصلاح
+## 11. مشاكل Netlify
 
-رتب الإصلاحات من الأخطر إلى الأقل خطورة.
+## 12. مشاكل GitHub Pages
 
-وفي النهاية أعطني:
+## 13. مشاكل الأمان
 
-CRITICAL_COUNT
-HIGH_COUNT
-MEDIUM_COUNT
-LOW_COUNT
+## 14. مشاكل البنية
 
-مهم:
-إذا لم تستطع التأكد من مشكلة معينة، اكتب:
-"تحتاج إلى اختبار"
-ولا تخترع نتيجة.
+## 15. الملفات التي تحتاج إلى تعديل
 
-إليك ملفات المشروع:
+اعطني قائمة دقيقة.
+
+## 16. خطة الإصلاح
+
+رتب الإصلاحات:
+
+CRITICAL
+HIGH
+MEDIUM
+LOW
+
+وفي النهاية اكتب:
+
+CRITICAL_COUNT: رقم
+HIGH_COUNT: رقم
+MEDIUM_COUNT: رقم
+LOW_COUNT: رقم
+
+لا تخترع أخطاء.
+إذا كان هناك شيء لا يمكن التأكد منه من الكود، اكتب:
+"يحتاج إلى اختبار فعلي".
+
+هذه هي ملفات المشروع:
 
 ${projectCode}
 `;
+}
+
+async function callGMI(projectCode) {
+  if (!API_KEY) {
+    throw new Error(
+      "OPENAI_API_KEY غير موجود في Netlify Environment Variables."
+    );
+  }
 
   const response = await fetch(
-    "https://api.gmi-serving.com/v1/chat/completions",
+    `${GMI_BASE_URL}/chat/completions`,
     {
       method: "POST",
 
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`
+        Authorization: `Bearer ${API_KEY}`
       },
 
       body: JSON.stringify({
-        model: "openai/gpt-5.6",
+        model: GMI_MODEL,
 
         messages: [
           {
             role: "system",
             content:
-              "You are a senior software engineer specializing in web application debugging, architecture, HTML, CSS and JavaScript."
+              "You are a senior software engineer and security-conscious code auditor."
           },
           {
             role: "user",
-            content: prompt
+            content: createPrompt(projectCode)
           }
         ],
 
@@ -267,22 +332,30 @@ ${projectCode}
     }
   );
 
-  if (!response.ok) {
-    const errorText = await response.text();
+  const responseText = await response.text();
 
+  if (!response.ok) {
     throw new Error(
-      `GMI API Error ${response.status}: ${errorText}`
+      `GMI Cloud API Error ${response.status}: ${responseText}`
     );
   }
 
-  const data = await response.json();
+  let data;
+
+  try {
+    data = JSON.parse(responseText);
+  } catch {
+    throw new Error(
+      "استجابة GMI Cloud ليست JSON صحيحة."
+    );
+  }
 
   const result =
     data?.choices?.[0]?.message?.content;
 
   if (!result) {
     throw new Error(
-      "لم تصل نتيجة من نموذج GMI Cloud."
+      "GMI Cloud لم ترجع تقريرًا."
     );
   }
 
@@ -291,12 +364,23 @@ ${projectCode}
 
 async function main() {
   console.log("");
-  console.log("======================================");
+  console.log("========================================");
   console.log(" دجاج اليمامة - AI CODE AUDITOR");
-  console.log("======================================");
-
+  console.log("========================================");
   console.log("");
-  console.log("[1/3] قراءة ملفات المشروع...");
+
+  console.log("[1/4] التحقق من مفتاح API...");
+
+  if (!API_KEY) {
+    throw new Error(
+      "OPENAI_API_KEY غير موجود."
+    );
+  }
+
+  console.log("[OK] مفتاح API موجود.");
+  console.log("");
+
+  console.log("[2/4] قراءة ملفات المشروع...");
 
   const projectCode = readProject();
 
@@ -311,26 +395,39 @@ async function main() {
   );
 
   console.log("");
-  console.log("[2/3] إرسال المشروع إلى GMI Cloud...");
-  console.log("النموذج: openai/gpt-5.6");
-  console.log("يرجى الانتظار...");
+  console.log("[3/4] إرسال المشروع إلى GMI Cloud...");
+  console.log(`Model: ${GMI_MODEL}`);
+  console.log("");
 
-  const report = await callGMI(projectCode);
+  const report =
+    await callGMI(projectCode);
 
   console.log("");
-  console.log("[3/3] تقرير الفحص");
+  console.log("[4/4] تقرير الذكاء الاصطناعي");
   console.log("");
+  console.log("========================================");
+  console.log("");
+
   console.log(report);
 
   console.log("");
-  console.log("======================================");
-  console.log("انتهى الفحص.");
-  console.log("======================================");
+  console.log("========================================");
+  console.log(" انتهى الفحص بنجاح");
+  console.log("========================================");
 }
 
 main().catch((error) => {
   console.error("");
   console.error("❌ فشل AI Auditor");
+  console.error("");
   console.error(error.message);
-  process.exit(1);
+  console.error("");
+
+  /*
+   * لا نريد أن يؤدي فشل المدقق إلى تعطيل
+   * نشر متجر دجاج اليمامة.
+   *
+   * لذلك لا نوقف Netlify Build.
+   */
+  process.exitCode = 0;
 });
